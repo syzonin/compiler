@@ -1088,7 +1088,7 @@ public class Parser {
 				System.out.println("In IdnestList(), did not pass: IdnestList -> . id IndiceList IdnestList ");
 			}
 		}
-		else if (lookAhead.inFirst(nt.IndiceList)){
+		else if (lookAhead.inRHS2(nt.IdnestList)){
 			if (IndiceList()){
 				System.out.println("IdnestList -> IndiceList");
 				parseInfo += "IdnestList -> IndiceList " + "\r\n";

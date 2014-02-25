@@ -96,7 +96,6 @@ public class NonTerminalCollection {
 		String[] first11 = {"int", "float", "id", "if", "for", "get", "put", "return"};
 		String[] rhs11_1 = {"if", "for", "get", "put", "return"};
 		String[] rhs11_2 = {"id"};
-		//String[] rhs11_2 = {"id", "opensq", "dot", "assignop"};
 		String[] rhs11_3 = {"float"};
 		String[] rhs11_4 = {"int"};
 		String[] follow11 = {"int", "float", "id", "if", "for", "get", "put", "return", "closecur"};
@@ -206,7 +205,7 @@ public class NonTerminalCollection {
 		String[] first30 = {"dot", "opensq"};
 		String[] rhs30_1 = {"dot"};
 		String[] rhs30_2 = {"opensq"};
-		String[] follow30 = {"assignop", "closepar", "assignop", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
+		String[] follow30 = {"assignop", "closepar", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
 				"relop_ge", "relop_le", "relop_lege", "closesq", "add", "sub", "or", "mul", "div", "and"};
 		IdnestList = new NonTerminal("IdnestList", first30, follow30, rhs30_1, rhs30_2, null, null, null, null);
 		
@@ -215,7 +214,7 @@ public class NonTerminalCollection {
 		Variable = new NonTerminal("Variable", first31, follow31, first31, null, null, null, null, null);
 		
 		String[] first32 = {"opensq"};
-		String[] follow32 = {"assignop", "closepar", "assignop", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
+		String[] follow32 = {"assignop", "closepar", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
 				"relop_ge", "relop_le", "relop_lege", "closesq", "add", "sub", "or", "mul", "div", "and", "dot"};
 		IndiceList = new NonTerminal("IndiceList", first32, follow32, first32, null, null, null, null, null);
 		
