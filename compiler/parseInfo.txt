@@ -1,0 +1,13 @@
+Type -> int
+ArraySize2 -> epsilon
+ArraySize2 -> [ num ] ArraySize2
+ArraySize2 -> [ num ] ArraySize2
+ArraySize2 -> [ num ] ArraySize2
+ArraySize2 -> [ num ] ArraySize2
+ArraySize2 -> [ num ] ArraySize2
+ArraySize2 -> [ num ] ArraySize2
+ArraySize -> [ num ] ArraySize2
+Type -> float
+ArraySize -> epsilon
+Type -> int
+ArraySize2 -> epsilon
