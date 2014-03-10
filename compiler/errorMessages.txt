@@ -1,0 +1,8 @@
+Error occurred with the following set of characters: kl# at location 17
+Error occurred with the following set of characters: # at location 21
+Error occurred with the following set of characters: % at location 178
+Error occurred with the following set of characters: $ at location 179
+Error occurred with the following set of characters: 323$ at location 182
+Error occurred with the following set of characters: $ at location 188
+Error occurred with the following set of characters: ^ at location 189
+Error occurred with the following set of characters: _ at location 255

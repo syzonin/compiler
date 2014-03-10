@@ -20,9 +20,9 @@ public class Lex {
 	public static void main(String args[]){
 		
 		//get file from stream into char array
-		String filePath = "C:/Users/Si/workspace/lexical_analyzer/test.txt";
-		String tokenFilePath = "C:/Users/Si/workspace/lexical_analyzer/tokens.txt";
-		String errorFilePath = "C:/Users/Si/workspace/lexical_analyzer/errorMessages.txt";
+		String filePath = "C:/Users/Si/git/compiler/compiler/test.txt";
+		String tokenFilePath = "C:/Users/Si/git/compiler/compiler/tokens.txt";
+		String errorFilePath = "C:/Users/Si/git/compiler/compiler/errorMessages.txt";
 		try {
 			fileContent = ReadFileToCharArray(filePath);
 		} catch (IOException e) {
@@ -213,11 +213,39 @@ public class Lex {
 		return isBackup;
 	}
 	
+	//checks if string is an integer
+	static boolean isInteger(String s) {
+	    return isInteger(s,10);
+	}
+	
+	//helper method for string is integer check
+	public static boolean isInteger(String s, int radix) {
+	    if(s.isEmpty()) return false;
+	    for(int i = 0; i < s.length(); i++) {
+	        if(i == 0 && s.charAt(i) == '-') {
+	            if(s.length() == 1) return false;
+	            else continue;
+	        }
+	        if(Character.digit(s.charAt(i),radix) < 0) return false;
+	    }
+	    return true;
+	}
 	static Token createToken(String s){
 		// check final state to see Token type
 		Token t;
-		if(s.equals("5"))
-			t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+		if(s.equals("5")){
+			if (isInteger(lexeme)){
+				if (Integer.parseInt(lexeme) > 0){
+					t = new Token("INT", lexeme, currentLocation-lexeme.length(), lexeme.length());
+				}
+				else {
+					t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+				}
+			}
+			else {
+				t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+			}
+		}
 		else if(s.equals("11"))
 			if (lexeme.equals("and")){
 				t = new Token("and", lexeme, currentLocation-lexeme.length(), lexeme.length());
@@ -257,6 +285,9 @@ public class Lex {
 			}
 			else if (lexeme.equals("return")){
 				t = new Token("return", lexeme, currentLocation-lexeme.length(), lexeme.length());
+			}
+			else if (lexeme.equals("program")){
+				t = new Token("program", lexeme, currentLocation-lexeme.length(), lexeme.length());
 			}
 			else{
 				t = new Token("id", lexeme, currentLocation-lexeme.length(), lexeme.length());
@@ -371,7 +402,7 @@ public class Lex {
 		String tempArray2[] = {"2", "2", "2", "5", "3", "5", "5", "5", "5", "5", "12", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "no", "no"};
 		String tempArray3[] = {"3", "6", "4", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "no", "no"};
 		String tempArray4[] = {"4", "6", "7", "5", "5", "5", "5", "5", "5", "5", "12", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "no", "no"};
-		String tempArray5[] = {"5", "1", "1", "1", "1", "1", "1", "1", "1", "1", "12", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "[num]", "yes"};
+		String tempArray5[] = {"5", "1", "1", "1", "1", "1", "1", "1", "1", "1", "12", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "[various]", "yes"};
 		String tempArray6[] = {"6", "6", "8", "5", "5", "5", "5", "5", "5", "5", "12", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "5", "no", "no"};
 		String tempArray7[] = {"7", "6", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "no", "no"};
 		String tempArray8[] = {"8", "6", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "no", "no"};

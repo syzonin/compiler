@@ -36,7 +36,7 @@ public class Compiler {
 		
 		//call parser, returns true or false
 		boolean parsed = parser();
-		String parseFilePath = "C:/Users/Si/workspace/lexical_analyzer/parseInfo.txt";
+		String parseFilePath = "C:/Users/Si/git/compiler/compiler/parseInfo.txt";
 		WriteToFile(parseFilePath, parseInfo);
 		
 		if (parsed)
@@ -1326,9 +1326,9 @@ public class Compiler {
 	////////////////////////////////////////////////LEXICAL ANALYZER CODE/////////////////////////////////////////////////
 	static void lexicalAnalyzer(){
 		//get file from stream into char array
-		String filePath = "C:/Users/Si/workspace/lexical_analyzer/profprovided.txt";
-		String tokenFilePath = "C:/Users/Si/workspace/lexical_analyzer/tokens.txt";
-		String errorFilePath = "C:/Users/Si/workspace/lexical_analyzer/errorMessages.txt";
+		String filePath = "C:/Users/Si/git/compiler/compiler/profprovided.txt";
+		String tokenFilePath = "C:/Users/Si/git/compiler/compiler/tokens.txt";
+		String errorFilePath = "C:/Users/Si/git/compiler/compiler/errorMessages.txt";
 		try {
 			fileContent = ReadFileToCharArray(filePath);
 		} catch (IOException e) {
@@ -1526,11 +1526,41 @@ public class Compiler {
 		return isBackup;
 	}
 	
+	//checks if string is an integer
+	static boolean isInteger(String s) {
+	    return isInteger(s,10);
+	}
+	
+	//helper method for string is integer check
+	public static boolean isInteger(String s, int radix) {
+	    if(s.isEmpty()) return false;
+	    for(int i = 0; i < s.length(); i++) {
+	        if(i == 0 && s.charAt(i) == '-') {
+	            if(s.length() == 1) return false;
+	            else continue;
+	        }
+	        if(Character.digit(s.charAt(i),radix) < 0) return false;
+	    }
+	    return true;
+	}
+	
+	//creates Token object
 	static Token createToken(String s){
 		// check final state to see Token type
 		Token t;
-		if(s.equals("5"))
-			t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+		if(s.equals("5")){
+			if (isInteger(lexeme)){
+				if (Integer.parseInt(lexeme) > 0){
+					t = new Token("INT", lexeme, currentLocation-lexeme.length(), lexeme.length());
+				}
+				else {
+					t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+				}
+			}
+			else {
+				t = new Token("num", lexeme, currentLocation-lexeme.length(), lexeme.length());
+			}
+		}
 		else if(s.equals("11"))
 			if (lexeme.equals("and")){
 				t = new Token("and", lexeme, currentLocation-lexeme.length(), lexeme.length());
@@ -1570,6 +1600,9 @@ public class Compiler {
 			}
 			else if (lexeme.equals("return")){
 				t = new Token("return", lexeme, currentLocation-lexeme.length(), lexeme.length());
+			}
+			else if (lexeme.equals("program")){
+				t = new Token("program", lexeme, currentLocation-lexeme.length(), lexeme.length());
 			}
 			else{
 				t = new Token("id", lexeme, currentLocation-lexeme.length(), lexeme.length());
