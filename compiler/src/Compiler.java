@@ -1356,7 +1356,7 @@ public class Compiler {
 			else{
 				//add EOF symbol $ for parser
 				tokenArray.add(new Token("eof", "$", currentLocation + 1, 1));
-				System.out.println("Reached end of file.");
+				System.out.println("Reached end of file. Token array patted with $ symbol.");
 			}
 			//if token type is an error, do not write to file
 		}
