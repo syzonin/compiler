@@ -37,6 +37,8 @@ public class TerminalCollection {
 	public Terminal t_opensq;
 	public Terminal t_closesq;
 	public Terminal t_eof;
+	public Terminal t_program;
+	public Terminal t_INT;
 	
 	public TerminalCollection (){
 		t_id = new Terminal("id", "");
@@ -75,6 +77,8 @@ public class TerminalCollection {
 		t_opensq = new Terminal("opensq", "[");
 		t_closesq = new Terminal("closesq", "]");
 		t_eof = new Terminal("eof", "$");
+		t_program = new Terminal("program", "program");
+		t_INT = new Terminal("INT", "");
 	}
 
 }

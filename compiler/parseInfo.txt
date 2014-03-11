@@ -1,1 +1,13 @@
 Type -> int
+ArraySize -> epsilon
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+ArraySize -> [ INT ] ArraySize
+Type -> float
+ArraySize -> epsilon
+Type -> int
+ArraySize -> epsilon

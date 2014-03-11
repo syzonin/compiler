@@ -10,9 +10,6 @@ public class NonTerminalCollection {
 	public NonTerminal StatBlock;
 	public NonTerminal Sign;
 	public NonTerminal Factor;
-	public NonTerminal Idnest2;
-	public NonTerminal Indice2;
-	public NonTerminal ArraySize2;
 	public NonTerminal Fparams;
 	public NonTerminal FParamsTail;
 	public NonTerminal AParamsTail;
@@ -23,10 +20,6 @@ public class NonTerminalCollection {
 	public NonTerminal FuncDef;
 	public NonTerminal Term;
 	public NonTerminal Expr;
-	public NonTerminal ClassDecl2;
-	public NonTerminal FuncDef2;
-	public NonTerminal VarDecl2;
-	public NonTerminal Statement2;
 	public NonTerminal ArithExpr2;
 	public NonTerminal Term2;
 	public NonTerminal Idnest;
@@ -34,8 +27,6 @@ public class NonTerminalCollection {
 	public NonTerminal ArraySize;
 	public NonTerminal Type;
 	public NonTerminal Aparams;
-	public NonTerminal FParamsTail2;
-	public NonTerminal AParamsTail2;
 	public NonTerminal RelOp;
 	public NonTerminal MultOp;
 	public NonTerminal FuncHead;
@@ -54,18 +45,17 @@ public class NonTerminalCollection {
 		//1
 		ClassDecl = new NonTerminal("ClassDecl");
 		ClassDecl.addFirst("class");
-		ClassDecl.addFollow("id");
+		ClassDecl.addFollow("program");
 
 		//2
 		ProgBody = new NonTerminal("ProgBody");
-		ProgBody.addFirst("id");
+		ProgBody.addFirst("program");
 		ProgBody.addFollow("eof");
 
 
 		//3
 		FuncBody = new NonTerminal("FuncBody");
 		FuncBody.addFirst("{");
-		FuncBody.addFollow("eof");
 		FuncBody.addFollow("int");
 		FuncBody.addFollow("float");
 		FuncBody.addFollow("id");
@@ -116,37 +106,11 @@ public class NonTerminalCollection {
 		Factor.addFirst("id");
 		Factor.addFirst("add");
 		Factor.addFirst("sub");
-		Factor.addFollow("eof");
 		Factor.addFollow("mul");
 		Factor.addFollow("div");
 		Factor.addFollow("and");
 
 		//8
-		Idnest2 = new NonTerminal("Idnest2");
-		Idnest2.addFirst("id");
-		Idnest2.addFirst("epsilon");
-		Idnest2.addFollow("id");
-
-		//9
-		Indice2 = new NonTerminal("Indice2");
-		Indice2.addFirst("opensq");
-		Indice2.addFirst("epsilon");
-		Indice2.addFollow("dot");
-		Indice2.addFollow("assignop");
-		Indice2.addFollow("closepar");
-		Indice2.addFollow("eof");
-		Indice2.addFollow("mul");
-		Indice2.addFollow("div");
-		Indice2.addFollow("and");
-
-		//10
-		ArraySize2 = new NonTerminal("ArraySize2");
-		ArraySize2.addFirst("opensq");
-		ArraySize2.addFirst("epsilon");
-		ArraySize2.addFollow("comma");
-		ArraySize2.addFollow("semi");
-		
-		//11
 		Fparams = new NonTerminal("Fparams");
 		Fparams.addFirst("epsilon");
 		Fparams.addFirst("int");
@@ -154,17 +118,17 @@ public class NonTerminalCollection {
 		Fparams.addFirst("id");
 		Fparams.addFollow("closepar");
 
-		//12
+		//9
 		FParamsTail = new NonTerminal("FParamsTail");
 		FParamsTail.addFirst("comma");
 		FParamsTail.addFollow("closepar");
 
-		//13
+		//10
 		AParamsTail = new NonTerminal("AParamsTail");
 		AParamsTail.addFirst("comma");
 		AParamsTail.addFollow("closepar");
 
-		//14
+		//11
 		AssignOp = new NonTerminal("AssignOp");
 		AssignOp.addFirst("assignop");
 		AssignOp.addFollow("num");
@@ -174,7 +138,7 @@ public class NonTerminalCollection {
 		AssignOp.addFollow("add");
 		AssignOp.addFollow("sub");
 
-		//15
+		//12
 		AddOp = new NonTerminal("AddOp");
 		AddOp.addFirst("add");
 		AddOp.addFirst("sub");
@@ -186,16 +150,17 @@ public class NonTerminalCollection {
 		AddOp.addFollow("add");
 		AddOp.addFollow("sub");
 
-		//16
+		//13
 		Prog = new NonTerminal("Prog");
 		Prog.addFirst("class");
 		Prog.addFollow("eof");
 
-		//17
+		//14
 		VarDecl = new NonTerminal("VarDecl");
 		VarDecl.addFirst("int");
 		VarDecl.addFirst("float");
 		VarDecl.addFirst("id");
+		VarDecl.addFollow("semi");
 		VarDecl.addFollow("if");
 		VarDecl.addFollow("for");
 		VarDecl.addFollow("get");
@@ -205,7 +170,7 @@ public class NonTerminalCollection {
 		VarDecl.addFollow("int");
 		VarDecl.addFollow("float");
 		
-		//18
+		//15
 		FuncDef = new NonTerminal("FuncDef");
 		FuncDef.addFirst("int");
 		FuncDef.addFirst("float");
@@ -213,7 +178,7 @@ public class NonTerminalCollection {
 		FuncDef.addFollow("closecur");
 		FuncDef.addFollow("eof");
 
-		//19
+		//16
 		Term = new NonTerminal("Term");
 		Term.addFirst("num");
 		Term.addFirst("openpar");
@@ -221,12 +186,11 @@ public class NonTerminalCollection {
 		Term.addFirst("id");
 		Term.addFirst("add");
 		Term.addFirst("sub");
-		Term.addFollow("eof");
 		Term.addFollow("add");
 		Term.addFollow("sub");
 		Term.addFollow("or");
 
-		//20
+		//17
 		Expr = new NonTerminal("Expr");
 		Expr.addFirst("num");
 		Expr.addFirst("openpar");
@@ -235,54 +199,10 @@ public class NonTerminalCollection {
 		Expr.addFirst("add");
 		Expr.addFirst("sub");
 		Expr.addFollow("comma");
-		Expr.addFollow("eof");
 		Expr.addFollow("closepar");
 		Expr.addFollow("semi");
-		
-		//21
-		ClassDecl2 = new NonTerminal("ClassDecl2");
-		ClassDecl2.addFirst("class");
-		ClassDecl2.addFirst("epsilon");
-		ClassDecl2.addFollow("id");
-		
-		//22
-		FuncDef2 = new NonTerminal("FuncDef2");
-		FuncDef2.addFirst("epsilon");
-		FuncDef2.addFirst("int");
-		FuncDef2.addFirst("float");
-		FuncDef2.addFirst("id");
-		FuncDef2.addFollow("closecur");
-		FuncDef2.addFollow("eof");
 
-		//23
-		VarDecl2 = new NonTerminal("VarDecl2");
-		VarDecl2.addFirst("epsilon");
-		VarDecl2.addFirst("int");
-		VarDecl2.addFirst("float");
-		VarDecl2.addFirst("id");
-		VarDecl2.addFollow("if");
-		VarDecl2.addFollow("for");
-		VarDecl2.addFollow("get");
-		VarDecl2.addFollow("put");
-		VarDecl2.addFollow("return");
-		VarDecl2.addFollow("id");
-		VarDecl2.addFollow("int");
-		VarDecl2.addFollow("float");
-
-		//24
-		Statement2 = new NonTerminal("Statement2");
-		Statement2.addFirst("if");
-		Statement2.addFirst("for");
-		Statement2.addFirst("get");
-		Statement2.addFirst("put");
-		Statement2.addFirst("return");
-		Statement2.addFirst("epsilon");
-		Statement2.addFirst("id");
-		Statement2.addFollow("closecur");
-		Statement2.addFollow("else");
-		Statement2.addFollow("semi");
-
-		//25
+		//18
 		ArithExpr2 = new NonTerminal("ArithExpr2");
 		ArithExpr2.addFirst("epsilon");
 		ArithExpr2.addFirst("add");
@@ -300,47 +220,45 @@ public class NonTerminalCollection {
 		ArithExpr2.addFollow("comma");
 		ArithExpr2.addFollow("eof");
 		
-		//26
+		//19
 		Term2 = new NonTerminal("Term2");
 		Term2.addFirst("epsilon");
 		Term2.addFirst("mul");
 		Term2.addFirst("div");
 		Term2.addFirst("and");
-		Term2.addFollow("eof");
 		Term2.addFollow("add");
 		Term2.addFollow("sub");
 		Term2.addFollow("or");
 		
-		//27
+		//20
 		Idnest = new NonTerminal("Idnest");
 		Idnest.addFirst("id");
 		Idnest.addFollow("id");
 		
-		//28
+		//21
 		Indice = new NonTerminal("Indice");
 		Indice.addFirst("opensq");
 		Indice.addFollow("dot");
 		Indice.addFollow("assignop");
 		Indice.addFollow("closepar");
-		Indice.addFollow("eof");
 		Indice.addFollow("mul");
 		Indice.addFollow("div");
 		Indice.addFollow("and");
 
-		//29
+		//22
 		ArraySize = new NonTerminal("ArraySize");
 		ArraySize.addFirst("opensq");
 		ArraySize.addFollow("comma");
 		ArraySize.addFollow("semi");
 
-		//30
+		//23
 		Type = new NonTerminal("Type");
 		Type.addFirst("int");
 		Type.addFirst("float");
 		Type.addFirst("id");
 		Type.addFollow("id");
 
-		//31
+		//24
 		Aparams = new NonTerminal("Aparams");
 		Aparams.addFirst("epsilon");
 		Aparams.addFirst("num");
@@ -350,20 +268,8 @@ public class NonTerminalCollection {
 		Aparams.addFirst("add");
 		Aparams.addFirst("sub");
 		Aparams.addFollow("closepar");
-
-		//32
-		FParamsTail2 = new NonTerminal("FParamsTail2");
-		FParamsTail2.addFirst("comma");
-		FParamsTail2.addFirst("epsilon");
-		FParamsTail2.addFollow("closepar");
-
-		//33
-		AParamsTail2 = new NonTerminal("AParamsTail2");
-		AParamsTail2.addFirst("comma");
-		AParamsTail2.addFirst("epsilon");
-		AParamsTail2.addFollow("closepar");
 		
-		//34
+		//25
 		RelOp = new NonTerminal("RelOp");
 		RelOp.addFirst("relop_e");
 		RelOp.addFirst("lege");
@@ -378,7 +284,7 @@ public class NonTerminalCollection {
 		RelOp.addFollow("add");
 		RelOp.addFollow("sub");
 
-		//35
+		//26
 		MultOp = new NonTerminal("MultOp");
 		MultOp.addFirst("mul");
 		MultOp.addFirst("div");
@@ -390,30 +296,29 @@ public class NonTerminalCollection {
 		MultOp.addFollow("add");
 		MultOp.addFollow("sub");
 
-		//36
+		//27
 		FuncHead = new NonTerminal("FuncHead");
 		FuncHead.addFirst("int");
 		FuncHead.addFirst("float");
 		FuncHead.addFirst("id");
 		FuncHead.addFollow("opencur");
 		
-		//37
+		//28
 		Variable = new NonTerminal("Variable");
 		Variable.addFirst("id");
 		Variable.addFollow("assignop");
 		Variable.addFollow("closecur");
-		Variable.addFollow("eof");
 		Variable.addFollow("mul");
 		Variable.addFollow("div");
 		Variable.addFollow("and");
 
-		//38
+		//29
 		AssignStat = new NonTerminal("AssignStat");
 		AssignStat.addFirst("id");
 		AssignStat.addFollow("semi");
 		AssignStat.addFollow("closepar");
 
-		//39
+		//30
 		ArithExpr = new NonTerminal("ArithExpr");
 		ArithExpr.addFirst("num");
 		ArithExpr.addFirst("openpar");
@@ -433,7 +338,7 @@ public class NonTerminalCollection {
 		ArithExpr.addFollow("comma");
 		ArithExpr.addFollow("eof");
 
-		//40
+		//31
 		RelExpr = new NonTerminal("RelExpr");
 		RelExpr.addFirst("num");
 		RelExpr.addFirst("openpar");
@@ -443,7 +348,6 @@ public class NonTerminalCollection {
 		RelExpr.addFirst("sub");
 		RelExpr.addFollow("semi");
 		RelExpr.addFollow("comma");
-		RelExpr.addFollow("eof");
 		RelExpr.addFollow("closepar");
 		
 	}

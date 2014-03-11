@@ -39,6 +39,7 @@ public class Compiler {
 		String parseFilePath = "C:/Users/Si/git/compiler/compiler/parseInfo.txt";
 		WriteToFile(parseFilePath, parseInfo);
 		
+
 		if (parsed)
 			System.out.println("successful parse!");
 		else
@@ -77,16 +78,16 @@ public class Compiler {
 		return success;
 	}
 	
-	//2. ClassDecl ->  class id { VarDecl FuncDef } ; ClassDecl2 | ClassDecl2
+	//2. ClassDecl ->  class id { VarDecl FuncDef } ; ClassDecl | epsilon
 	static boolean ClassDecl(){
 		boolean success = skipErrors(nonTerminals.ClassDecl);
 		if (lookAhead.getType().equals("class")){
 			if (match(terminals.t_class) && match(terminals.t_id) && match(terminals.t_opencur) && 
 				VarDecl() && FuncDef() && match(terminals.t_closecur) && match(terminals.t_semi) &&
-				ClassDecl2())
+				ClassDecl())
 			{
-				System.out.println("ClassDecl -> class id { VarDecl FuncDef } ; ClassDecl2");
-				parseInfo += "ClassDecl -> class id { VarDecl FuncDef } ; ClassDecl2" + "\r\n";
+				System.out.println("ClassDecl -> class id { VarDecl FuncDef } ; ClassDecl");
+				parseInfo += "ClassDecl -> class id { VarDecl FuncDef } ; ClassDecl" + "\r\n";
 			}
 			else {
 				success = false;
@@ -102,40 +103,14 @@ public class Compiler {
 		return success;
 	}
 	
-	//3. ClassDecl2 -> class id { VarDecl FuncDef } ; ClassDecl2 | epsilon
-	static boolean ClassDecl2(){
-		boolean success = skipErrors(nonTerminals.ClassDecl2);
-		if (lookAhead.getType().equals("class")){
-			if (match(terminals.t_class) && match(terminals.t_id) && match(terminals.t_opencur) && 
-				VarDecl() && FuncDef() && match(terminals.t_closecur) && match(terminals.t_semi) &&
-				ClassDecl2())
-			{
-				System.out.println("ClassDecl2 -> class id { VarDecl FuncDef } ; ClassDecl2");
-				parseInfo += "ClassDecl2 -> class id { VarDecl FuncDef } ; ClassDecl2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.ClassDecl2.isInFollow(lookAhead.getType())){
-				System.out.println("ClassDecl2 -> epsilon");
-				parseInfo += "ClassDecl2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	
-	//4. ProgBody -> id FuncBody ; FuncDef
+	//3. ProgBody -> program FuncBody ; FuncDef
 	static boolean ProgBody(){
 		boolean success = skipErrors(nonTerminals.ProgBody);
-		if (lookAhead.getType().equals("id")){
-			if (match(terminals.t_id) && FuncBody() && match(terminals.t_semi) && FuncDef())
+		if (lookAhead.getType().equals("program")){
+			if (match(terminals.t_program) && FuncBody() && match(terminals.t_semi) && FuncDef())
 			{
-				System.out.println("ProgBody -> id FuncBody ; FuncDef");
-				parseInfo += "ProgBody -> id FuncBody ; FuncDef" + "\r\n";
+				System.out.println("ProgBody -> program FuncBody ; FuncDef");
+				parseInfo += "ProgBody -> program FuncBody ; FuncDef" + "\r\n";
 			}
 			else {
 				success = false;
@@ -147,7 +122,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//5. FuncHead -> Type id ( Fparams )
+	//4. FuncHead -> Type id ( Fparams )
 	static boolean FuncHead(){
 		boolean success = skipErrors(nonTerminals.FuncHead);
 		if (nonTerminals.Type.isInFirst(lookAhead.getType())){
@@ -167,13 +142,13 @@ public class Compiler {
 		return success;
 	}
 	
-	//6. FuncDef -> FuncHead FuncBody FuncDef2 | FuncDef2
+	//5. FuncDef -> FuncHead FuncBody  FuncDef | epsilon
 	static boolean FuncDef(){
 		boolean success = skipErrors(nonTerminals.FuncDef);
 		if (nonTerminals.FuncHead.isInFirst(lookAhead.getType())){
-			if (FuncHead() && FuncBody() && FuncDef2()){
-				System.out.println("FuncDef -> FuncHead FuncBody FuncDef2");
-				parseInfo += "FuncDef -> FuncHead FuncBody FuncDef2" + "\r\n";
+			if (FuncHead() && FuncBody() && FuncDef()){
+				System.out.println("FuncDef -> FuncHead FuncBody FuncDef");
+				parseInfo += "FuncDef -> FuncHead FuncBody FuncDef" + "\r\n";
 			}
 			else {
 				success = false;
@@ -188,32 +163,8 @@ public class Compiler {
 		}
 		return success;
 	}
-	
-	//7. FuncDef2 -> FuncHead FuncBody FuncDef2 | epsilon
-	static boolean FuncDef2(){
-		boolean success = skipErrors(nonTerminals.FuncDef2);
-		if (nonTerminals.FuncHead.isInFirst(lookAhead.getType())){
-			if (FuncHead() && FuncBody() && FuncDef2()){
-				System.out.println("FuncDef2 -> FuncHead FuncBody FuncDef2");
-				parseInfo += "FuncDef2 -> FuncHead FuncBody FuncDef2" + "\r\n";
 
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.FuncDef2.isInFollow(lookAhead.getType())){
-				System.out.println("FuncDef2 -> epsilon");
-				parseInfo += "FuncDef2 -> epsilon" + "\r\n";
-
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//8. FuncBody -> { VarDecl Statement }
+	//6. FuncBody -> { VarDecl Statement }
 	static boolean FuncBody(){
 		boolean success = skipErrors(nonTerminals.FuncBody);
 		if (lookAhead.getType().equals("opencur")){
@@ -232,14 +183,14 @@ public class Compiler {
 		return success;
 	}
 	
-	//9. VarDecl -> Type id ArraySize ; VarDecl2 | VarDecl2
+	//7. VarDecl -> Type id ArraySize ; VarDecl | epsilon
 	static boolean VarDecl(){
 		boolean success = skipErrors(nonTerminals.VarDecl);
 		if (nonTerminals.Type.isInFirst(lookAhead.getType())){
 			if (Type() && match(terminals.t_id) && ArraySize() && match(terminals.t_semi)
-					&& VarDecl2()){
-				System.out.println("VarDecl -> Type id ArraySize ; VarDecl2");
-				parseInfo += "VarDecl -> Type id ArraySize ; VarDecl2" + "\r\n";
+					&& VarDecl()){
+				System.out.println("VarDecl -> Type id ArraySize ; VarDecl");
+				parseInfo += "VarDecl -> Type id ArraySize ; VarDecl" + "\r\n";
 			}
 			else {
 				success = false;
@@ -255,113 +206,91 @@ public class Compiler {
 		return success;
 	}
 	
-	//10. VarDecl2 -> Type id ArraySize ; VarDecl2 | epsilon
-	static boolean VarDecl2(){
-		boolean success = skipErrors(nonTerminals.VarDecl2);
-		if (nonTerminals.Type.isInFirst(lookAhead.getType())){
-			if (Type() && match(terminals.t_id) && ArraySize() && match(terminals.t_semi)
-					&& VarDecl2()){
-				System.out.println("VarDecl2 -> Type id ArraySize ; VarDecl2");
-				parseInfo += "VarDecl2 -> Type id ArraySize ; VarDecl2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.VarDecl2.isInFollow(lookAhead.getType())){
-			System.out.println("VarDecl2 -> epsilon");
-			parseInfo += "VarDecl2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//11. Statement ->  AssignStat ; Statement2
-	//		| if ( Expr ) then StatBlock else StatBlock ; Statement2
-	//		| for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement2
-	//		| get ( Variable ) ; Statement2
-	//		| put ( Expr ) ; Statement2
-	//		| return ( Expr ) ; Statement2
-	//		| Statement2
+	//8. Statement ->  AssignStat ; Statement
+	//		| if ( Expr ) then StatBlock else StatBlock ; Statement
+	//		| for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement
+	//		| get ( Variable ) ; Statement
+	//		| put ( Expr ) ; Statement
+	//		| return ( Expr ) ; Statement
+	//		| epsilon
 	static boolean Statement(){
 		boolean success = skipErrors(nonTerminals.Statement);
-		// AssignStat ; Statement2
+		// AssignStat ; Statement
 		if (nonTerminals.AssignStat.isInFirst(lookAhead.getType())){
-			if (AssignStat() && match(terminals.t_semi) && Statement2()){
-				System.out.println("Statement ->  AssignStat ; Statement2");
-				parseInfo += "Statement ->  AssignStat ; Statement2" + "\r\n";
+			if (AssignStat() && match(terminals.t_semi) && Statement()){
+				System.out.println("Statement ->  AssignStat ; Statement");
+				parseInfo += "Statement ->  AssignStat ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
-		// | if ( Expr ) then StatBlock else StatBlock ; Statement2
+		// | if ( Expr ) then StatBlock else StatBlock ; Statement
 		else if (lookAhead.getType().equals("if")){
 			if (match(terminals.t_if) && match(terminals.t_openpar) && Expr() &&
 					match(terminals.t_closepar) && match(terminals.t_then) && StatBlock() &&
-					match(terminals.t_else) && StatBlock() && match(terminals.t_semi) && Statement2() )
+					match(terminals.t_else) && StatBlock() && match(terminals.t_semi) && Statement() )
 			{
-				System.out.println("Statement ->  if ( Expr ) then StatBlock else StatBlock ; Statement2");
-				parseInfo += "Statement ->  if ( Expr ) then StatBlock else StatBlock ; Statement2" + "\r\n";
+				System.out.println("Statement ->  if ( Expr ) then StatBlock else StatBlock ; Statement");
+				parseInfo += "Statement ->  if ( Expr ) then StatBlock else StatBlock ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
-		// | for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement2
+		// | for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement
 		else if (lookAhead.getType().equals("for")){
 			if (match(terminals.t_for) && match(terminals.t_openpar) && Type() &&
 					match(terminals.t_id) && AssignOp() && Expr() && match(terminals.t_semi) && 
 					RelExpr() && match(terminals.t_semi) && AssignStat() && match(terminals.t_closepar) &&
-					StatBlock() &&	match(terminals.t_semi ) && Statement2() )
+					StatBlock() &&	match(terminals.t_semi ) && Statement() )
 			{
 				System.out.println("Statement ->  for ( Type id AssignOp Expr ; RelExpr " +
-						"; AssignStat ) StatBlock ; Statement2");
+						"; AssignStat ) StatBlock ; Statement");
 				parseInfo += "Statement ->  for ( Type id AssignOp Expr ; RelExpr " +
-						"; AssignStat ) StatBlock ; Statement2" + "\r\n";
+						"; AssignStat ) StatBlock ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
-		//| get ( Variable ) ; Statement2
+		//| get ( Variable ) ; Statement
 		else if (lookAhead.getType().equals("get")){
 			if (match(terminals.t_get) && match(terminals.t_openpar) && Variable() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
+					match(terminals.t_closepar) && match(terminals.t_semi) && Statement() )
 			{
-				System.out.println("Statement -> get ( Variable ) ; Statement2");
-				parseInfo += "Statement -> get ( Variable ) ; Statement2" + "\r\n";
+				System.out.println("Statement -> get ( Variable ) ; Statement");
+				parseInfo += "Statement -> get ( Variable ) ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
-		//| put ( Expr ) ; Statement2
+		//| put ( Expr ) ; Statement
 		else if (lookAhead.getType().equals("put")){
 			if (match(terminals.t_put) && match(terminals.t_openpar) && Expr() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
+					match(terminals.t_closepar) && match(terminals.t_semi) && Statement() )
 			{
-				System.out.println("Statement -> put ( Expr ) ; Statement2");
-				parseInfo += "Statement -> put ( Expr ) ; Statement2" + "\r\n";
+				System.out.println("Statement -> put ( Expr ) ; Statement");
+				parseInfo += "Statement -> put ( Expr ) ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
-		//| return ( Expr ) ; Statement2
+		//| return ( Expr ) ; Statement
 		else if (lookAhead.getType().equals("return")){
 			if (match(terminals.t_return) && match(terminals.t_openpar) && Expr() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
+					match(terminals.t_closepar) && match(terminals.t_semi) && Statement() )
 			{
-				System.out.println("Statement -> return ( Expr ) ; Statement2");
-				parseInfo += "Statement -> return ( Expr ) ; Statement2" + "\r\n";
+				System.out.println("Statement -> return ( Expr ) ; Statement");
+				parseInfo += "Statement -> return ( Expr ) ; Statement" + "\r\n";
 			}
 			else {
 				success = false;
 			}
 		}
+		//| epsilon
 		else if (nonTerminals.Statement.isInFollow(lookAhead.getType())){
 			System.out.println("Statement -> epsilon");
 			parseInfo += "Statement -> epsilon" + "\r\n";
@@ -372,102 +301,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//12. Statement2 -> AssignStat ; Statement2
-	//		|  if ( Expr ) then StatBlock else StatBlock ; Statement2
-	//		| for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement2
-	//		| get ( Variable ) ; Statement2
-	//		| put ( Expr ) ; Statement2
-	//		| return ( Expr ) ; Statement2
-	//		| epsilon
-	static boolean Statement2(){
-		boolean success = skipErrors(nonTerminals.Statement2);
-		// AssignStat ; Statement2
-		if (nonTerminals.AssignStat.isInFirst(lookAhead.getType())){
-			if (AssignStat() && match(terminals.t_semi) && Statement2()){
-				System.out.println("Statement2 ->  AssignStat ; Statement2");
-				parseInfo += "Statement2 ->  AssignStat ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		// | if ( Expr ) then StatBlock else StatBlock ; Statement2
-		else if (lookAhead.getType().equals("if")){
-			if (match(terminals.t_if) && match(terminals.t_openpar) && Expr() &&
-					match(terminals.t_closepar) && match(terminals.t_then) && StatBlock() &&
-					match(terminals.t_else) && StatBlock() && match(terminals.t_semi) && Statement2() )
-			{
-				System.out.println("Statement2 ->  if ( Expr ) then StatBlock else StatBlock ; Statement2");
-				parseInfo += "Statement2 ->  if ( Expr ) then StatBlock else StatBlock ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		// | for ( Type id AssignOp Expr ; RelExpr ; AssignStat ) StatBlock ; Statement2
-		else if (lookAhead.getType().equals("for")){
-			if (match(terminals.t_for) && match(terminals.t_openpar) && Type() &&
-					match(terminals.t_id) && AssignOp() && Expr() && match(terminals.t_semi) && 
-					RelExpr() && match(terminals.t_semi) && AssignStat() && match(terminals.t_closepar) &&
-					StatBlock() &&	match(terminals.t_semi ) && Statement2() )
-			{
-				System.out.println("Statement2 ->  for ( Type id AssignOp Expr ; RelExpr " +
-						"; AssignStat ) StatBlock ; Statement2");
-				parseInfo += "Statement2 ->  for ( Type id AssignOp Expr ; RelExpr " +
-						"; AssignStat ) StatBlock ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		//| get ( Variable ) ; Statement2
-		else if (lookAhead.getType().equals("get")){
-			if (match(terminals.t_get) && match(terminals.t_openpar) && Variable() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
-			{
-				System.out.println("Statement2 -> get ( Variable ) ; Statement2");
-				parseInfo += "Statement2 -> get ( Variable ) ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		//| put ( Expr ) ; Statement2
-		else if (lookAhead.getType().equals("put")){
-			if (match(terminals.t_put) && match(terminals.t_openpar) && Expr() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
-			{
-				System.out.println("Statement2 -> put ( Expr ) ; Statement2");
-				parseInfo += "Statement2 -> put ( Expr ) ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		//| return ( Expr ) ; Statement2
-		else if (lookAhead.getType().equals("return")){
-			if (match(terminals.t_return) && match(terminals.t_openpar) && Expr() &&
-					match(terminals.t_closepar) && match(terminals.t_semi) && Statement2() )
-			{
-				System.out.println("Statement2 -> return ( Expr ) ; Statement2");
-				parseInfo += "Statement2 -> return ( Expr ) ; Statement2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		// epsilon
-		else if (nonTerminals.Statement2.isInFollow(lookAhead.getType())){
-			System.out.println("Statement2 -> epsilon");
-			parseInfo += "Statement2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//13. AssignStat -> Variable AssignOp Expr
+	//9. AssignStat -> Variable AssignOp Expr
 	static boolean AssignStat(){
 		boolean success = skipErrors(nonTerminals.AssignStat);
 		if (nonTerminals.Variable.isInFirst(lookAhead.getType())){
@@ -485,7 +319,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//14. StatBlock -> { Statement } | Statement | epsilon
+	//10. StatBlock -> { Statement } | Statement | epsilon
 	static boolean StatBlock(){
 		boolean success = skipErrors(nonTerminals.StatBlock);
 		if (lookAhead.getType().equals("opencur")){
@@ -518,7 +352,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//15. Expr -> ArithExpr | RelExpr 
+	//11. Expr -> ArithExpr | RelExpr 
 	static boolean Expr(){
 		boolean success = skipErrors(nonTerminals.Expr);
 		if (nonTerminals.ArithExpr.isInFirst(lookAhead.getType())){
@@ -547,7 +381,7 @@ public class Compiler {
 		return success;
 	}
 
-	//16. RelExpr -> ArithExpr RelOp ArithExpr
+	//12. RelExpr -> ArithExpr RelOp ArithExpr
 	static boolean RelExpr(){
 		boolean success = skipErrors(nonTerminals.RelExpr);
 		if (nonTerminals.ArithExpr.isInFirst(lookAhead.getType())){
@@ -565,7 +399,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//17. ArithExpr -> Term ArithExpr2 | ArithExpr2
+	//13. ArithExpr -> Term ArithExpr2
 	static boolean ArithExpr(){
 		boolean success = skipErrors(nonTerminals.ArithExpr);
 		if (nonTerminals.Term.isInFirst(lookAhead.getType())){
@@ -577,17 +411,18 @@ public class Compiler {
 				success = false;
 			}
 		}
+		/*
 		else if (nonTerminals.ArithExpr.isInFollow(lookAhead.getType())){
 			System.out.println("ArithExpr -> epsilon");
 			parseInfo += "ArithExpr -> epsilon" + "\r\n";
-		}
+		}*/
 		else {
 			success = false;
 		}
 		return success;
 	}
 	
-	//18. ArithExpr2 -> AddOp Term ArithExpr2 | epsilon
+	//14. ArithExpr2 -> AddOp Term ArithExpr2 | epsilon
 	static boolean ArithExpr2(){
 		boolean success = skipErrors(nonTerminals.ArithExpr2);
 		if (nonTerminals.AddOp.isInFirst(lookAhead.getType())){
@@ -609,7 +444,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//19. Sign -> + | -
+	//15. Sign -> + | -
 	static boolean Sign(){
 		boolean success = skipErrors(nonTerminals.Sign);
 		if (lookAhead.getType().equals("add")){
@@ -638,7 +473,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//20. Term -> Factor Term2 | Term2
+	//16. Term -> Factor Term2
 	static boolean Term(){
 		boolean success = skipErrors(nonTerminals.Term);
 		if (nonTerminals.Factor.isInFirst(lookAhead.getType())){
@@ -650,17 +485,18 @@ public class Compiler {
 				success = false;
 			}
 		}
+		/*
 		else if (nonTerminals.Term.isInFollow(lookAhead.getType())){
 			System.out.println("Term -> epsilon");
 			parseInfo += "Term -> epsilon" + "\r\n";
-		}
+		}*/
 		else {
 			success = false;
 		}
 		return success;
 	}
 
-	//21. Term2 -> MultOp Factor Term2 | epsilon
+	//17. Term2 -> MultOp Factor Term2 | epsilon
 	static boolean Term2(){
 		boolean success = skipErrors(nonTerminals.Term2);
 		if (nonTerminals.MultOp.isInFirst(lookAhead.getType())){
@@ -682,7 +518,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//22. Factor -> Variable | Idnest id ( Aparams ) | num | ( ArithExpr ) | not Factor | Sign Factor
+	//18. Factor -> Variable | Idnest id ( Aparams ) | num | ( ArithExpr ) | not Factor | Sign Factor
 	static boolean Factor(){
 		boolean success = skipErrors(nonTerminals.Factor);
 		//Variable
@@ -758,7 +594,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//23. Variable -> Idnest id Indice
+	//19. Variable -> Idnest id Indice
 	static boolean Variable(){
 		boolean success = skipErrors(nonTerminals.Variable);
 		if (nonTerminals.Idnest.isInFirst(lookAhead.getType())){
@@ -776,14 +612,14 @@ public class Compiler {
 		return success;
 	}
 	
-	//24. Idnest -> id Indice . Idnest2 | Idnest2
+	//20. Idnest -> id Indice . Idnest | epsilon
 	static boolean Idnest(){
 		boolean success = skipErrors(nonTerminals.Idnest);
 		if (lookAhead.getType().equals("id")){
-			if (match(terminals.t_id) && Indice() && match(terminals.t_dot) && Idnest2())
+			if (match(terminals.t_id) && Indice() && match(terminals.t_dot) && Idnest())
 			{
-				System.out.println("Idnest -> id Indice . Idnest2");
-				parseInfo += "Idnest -> id Indice . Idnest2" + "\r\n";
+				System.out.println("Idnest -> id Indice . Idnest");
+				parseInfo += "Idnest -> id Indice . Idnest" + "\r\n";
 			}
 			else {
 				success = false;
@@ -799,37 +635,15 @@ public class Compiler {
 		return success;
 	}
 	
-	//25. Idnest2 -> id Indice . Idnest2 | epsilon
-	static boolean Idnest2(){
-		boolean success = skipErrors(nonTerminals.Idnest2);
-		if (lookAhead.getType().equals("id")){
-			if (match(terminals.t_id) && Indice() && match(terminals.t_dot) && Idnest2())
-			{
-				System.out.println("Idnest2 -> id Indice . Idnest2");
-				parseInfo += "Idnest2 -> id Indice . Idnest2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.Idnest2.isInFollow(lookAhead.getType())){
-				System.out.println("Idnest2 -> epsilon");
-				parseInfo += "Idnest2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
 	
-	//26. Indice -> [ ArithExpr ] Indice2
+	//21. Indice -> [ ArithExpr ] Indice | epsilon
 	static boolean Indice(){
 		boolean success = skipErrors(nonTerminals.Indice);
 		if (lookAhead.getType().equals("opensq")){
-			if (match(terminals.t_opensq) && ArithExpr() && match(terminals.t_closesq) && Indice2())
+			if (match(terminals.t_opensq) && ArithExpr() && match(terminals.t_closesq) && Indice())
 			{
-				System.out.println("Indice -> [ ArithExpr ] Indice2");
-				parseInfo += "Indice -> [ ArithExpr ] Indice2" + "\r\n";
+				System.out.println("Indice -> [ ArithExpr ] Indice");
+				parseInfo += "Indice -> [ ArithExpr ] Indice" + "\r\n";
 			}
 			else {
 				success = false;
@@ -845,38 +659,15 @@ public class Compiler {
 		return success;
 	}
 	
-	//27. Indice2 -> [ ArithExpr ] Indice2 | epsilon
-	static boolean Indice2(){
-		boolean success = skipErrors(nonTerminals.Indice2);
-		if (lookAhead.getType().equals("opensq")){
-			if (match(terminals.t_opensq) && ArithExpr() && match(terminals.t_closesq) && Indice2())
-			{
-				System.out.println("Indice2 -> [ ArithExpr ] Indice2");
-				parseInfo += "Indice2 -> [ ArithExpr ] Indice2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.Indice2.isInFollow(lookAhead.getType())){
-			System.out.println("Indice2 -> epsilon");
-			parseInfo += "Indice2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//28. ArraySize -> [ num ] ArraySize2 | ArraySize2
+	//22. ArraySize -> [ INT ] ArraySize | epsilon
 	static boolean ArraySize(){
 		boolean success = skipErrors(nonTerminals.ArraySize);
 		if (lookAhead.getType().equals("opensq")){
-			if (match(terminals.t_opensq) && match(terminals.t_num) &&
-					match(terminals.t_closesq) && ArraySize2())
+			if (match(terminals.t_opensq) && match(terminals.t_INT) &&
+					match(terminals.t_closesq) && ArraySize())
 			{
-				System.out.println("ArraySize -> [ num ] ArraySize2");
-				parseInfo += "ArraySize -> [ num ] ArraySize2" + "\r\n";
+				System.out.println("ArraySize -> [ INT ] ArraySize");
+				parseInfo += "ArraySize -> [ INT ] ArraySize" + "\r\n";
 			}
 			else {
 				success = false;
@@ -892,31 +683,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//29. ArraySize2 -> [ num ] ArraySize2 | epsilon
-	static boolean ArraySize2(){
-		boolean success = skipErrors(nonTerminals.ArraySize2);
-		if (lookAhead.getType().equals("opensq")){
-			if (match(terminals.t_opensq) && match(terminals.t_num) &&
-					match(terminals.t_closesq) && ArraySize2())
-			{
-				System.out.println("ArraySize2 -> [ num ] ArraySize2");
-				parseInfo += "ArraySize2 -> [ num ] ArraySize2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.ArraySize2.isInFollow(lookAhead.getType())){
-			System.out.println("ArraySize2 -> epsilon");
-			parseInfo += "ArraySize2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//30. Type -> int | float | id
+	//23. Type -> int | float | id
 	static boolean Type(){
 		boolean success = skipErrors(nonTerminals.Type);
 		if (lookAhead.getType().equals("int")){
@@ -955,7 +722,7 @@ public class Compiler {
 		return success;
 	}
 
-	//31. Fparams -> Type id ArraySize FParamsTail | epsilon
+	//24. Fparams -> Type id ArraySize FParamsTail | epsilon
 	static boolean Fparams(){
 		boolean success = skipErrors(nonTerminals.Fparams);
 		if (nonTerminals.Type.isInFirst(lookAhead.getType())){
@@ -977,7 +744,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//32. Aparams -> Expr AParamsTail | epsilon
+	//25. Aparams -> Expr AParamsTail | epsilon
 	static boolean Aparams(){
 		boolean success = skipErrors(nonTerminals.Aparams);
 		if (nonTerminals.Expr.isInFirst(lookAhead.getType())){
@@ -999,15 +766,15 @@ public class Compiler {
 		return success;
 	}
 	
-	//33. FParamsTail -> , Type id ArraySize FParamsTail2 | FParamsTail2
+	//26. FParamsTail -> , Type id ArraySize FParamsTail | epsilon
 	static boolean FParamsTail(){
 		boolean success = skipErrors(nonTerminals.FParamsTail);
 		if (lookAhead.getType().equals("comma")){
 			if (match(terminals.t_comma) && Type() && match(terminals.t_id) &&
-					ArraySize() && FParamsTail2())
+					ArraySize() && FParamsTail())
 			{
-				System.out.println("FParamsTail -> , Type id ArraySize FParamsTail2");
-				parseInfo += "FParamsTail -> , Type id ArraySize FParamsTail2" + "\r\n";
+				System.out.println("FParamsTail -> , Type id ArraySize FParamsTail");
+				parseInfo += "FParamsTail -> , Type id ArraySize FParamsTail" + "\r\n";
 			}
 			else {
 				success = false;
@@ -1023,38 +790,14 @@ public class Compiler {
 		return success;
 	}
 	
-	//34. FParamsTail2 -> , Type id ArraySize FParamsTail2 | epsilon
-	static boolean FParamsTail2(){
-		boolean success = skipErrors(nonTerminals.FParamsTail2);
-		if (lookAhead.getType().equals("comma")){
-			if (match(terminals.t_comma) && Type() && match(terminals.t_id) &&
-					ArraySize() && FParamsTail2())
-			{
-				System.out.println("FParamsTail2 -> , Type id ArraySize FParamsTail2");
-				parseInfo += "FParamsTail2 -> , Type id ArraySize FParamsTail2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.FParamsTail2.isInFollow(lookAhead.getType())){
-			System.out.println("FParamsTail2 -> epsilon");
-			parseInfo += "FParamsTail2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
-	
-	//35. AParamsTail -> , Expr AParamsTail2 | AParamsTail2
+	//27. AParamsTail -> , Expr AParamsTail | epsilon
 	static boolean AParamsTail(){
 		boolean success = skipErrors(nonTerminals.AParamsTail);
 		if (lookAhead.getType().equals("comma")){
-			if (match(terminals.t_comma) && Expr() && AParamsTail2())
+			if (match(terminals.t_comma) && Expr() && AParamsTail())
 			{
-				System.out.println("AParamsTail -> , Expr AParamsTail2");
-				parseInfo += "AParamsTail -> , Expr AParamsTail2" + "\r\n";
+				System.out.println("AParamsTail -> , Expr AParamsTail");
+				parseInfo += "AParamsTail -> , Expr AParamsTail" + "\r\n";
 			}
 			else {
 				success = false;
@@ -1069,31 +812,8 @@ public class Compiler {
 		}
 		return success;
 	}
-
-	//36. AParamsTail2 -> , Expr AParamsTail2 | epsilon
-	static boolean AParamsTail2(){
-		boolean success = skipErrors(nonTerminals.AParamsTail2);
-		if (lookAhead.getType().equals("comma")){
-			if (match(terminals.t_comma) && Expr() && AParamsTail2())
-			{
-				System.out.println("AParamsTail2 -> , Expr AParamsTail2");
-				parseInfo += "AParamsTail2 -> , Expr AParamsTail2" + "\r\n";
-			}
-			else {
-				success = false;
-			}
-		}
-		else if (nonTerminals.AParamsTail2.isInFollow(lookAhead.getType())){
-			System.out.println("AParamsTail2 -> epsilon");
-			parseInfo += "AParamsTail2 -> epsilon" + "\r\n";
-		}
-		else {
-			success = false;
-		}
-		return success;
-	}
 	
-	//37. AssignOp -> =
+	//28. AssignOp -> =
 	static boolean AssignOp(){
 		boolean success = skipErrors(nonTerminals.AssignOp);
 		if (lookAhead.getType().equals("assignop")){
@@ -1106,14 +826,13 @@ public class Compiler {
 				success = false;
 			}
 		}
-
 		else {
 			success = false;
 		}
 		return success;
 	}
 	
-	//38. RelOp -> == | <> | < | > | <= | >=
+	//29. RelOp -> == | <> | < | > | <= | >=
 	static boolean RelOp(){
 		boolean success = skipErrors(nonTerminals.RelOp);
 		if (lookAhead.getType().equals("relop_e")){
@@ -1182,7 +901,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//39. AddOp -> + | - | or
+	//30. AddOp -> + | - | or
 	static boolean AddOp(){
 		boolean success = skipErrors(nonTerminals.AddOp);
 		if (lookAhead.getType().equals("add")){
@@ -1221,7 +940,7 @@ public class Compiler {
 		return success;
 	}
 	
-	//40. MultOp -> * | / | and
+	//31. MultOp -> * | / | and
 	static boolean MultOp(){
 		boolean success = skipErrors(nonTerminals.MultOp);
 		if (lookAhead.getType().equals("mul")){
@@ -1266,6 +985,7 @@ public class Compiler {
 			t = tokenArray.get(tokenArrayLocation);
 			//System.out.println("tokenArrayLocation: " + tokenArrayLocation + ", token content: " + t);
 			tokenArrayLocation++;
+			System.out.println("the current token: " + t.getType() + " " + t.getLexeme());
 		}
 		return t;
 	}
@@ -1280,7 +1000,8 @@ public class Compiler {
 		}
 		else {
 			//write ("syntax error at" lookahead.location. "expected" token)
-			System.out.println("Syntax error at: " + lookAhead.getLexeme() + ". Expected: " + t.getSymbol());
+			System.out.println("Syntax error at: " + lookAhead.getLexeme() + ". Expected: " + t.getSymbol() + t.getName());
+			
 			
 			lookAhead = nextTokenParser();
 			return false;
@@ -1550,7 +1271,7 @@ public class Compiler {
 		Token t;
 		if(s.equals("5")){
 			if (isInteger(lexeme)){
-				if (Integer.parseInt(lexeme) > 0){
+				if (Integer.parseInt(lexeme) >= 0){
 					t = new Token("INT", lexeme, currentLocation-lexeme.length(), lexeme.length());
 				}
 				else {
