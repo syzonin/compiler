@@ -1,46 +1,43 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
-public class Lex {
+//Lexical Analyzer Class
+public class Lexer {
 	
 	//lookup table with height 28, width 25
-	static String[][] lookupTable = new String[28][25];
-	static char[] fileContent;
-	static int currentLocation = 0;
-	static String lexeme = "";
-	static String state = "1";
-	static boolean fileComplete = false;
-	static String tokens="";
-	static String errorMessages="";
-	
-	public static void main(String args[]){
+	private String[][] lookupTable = new String[28][25];
+	private char[] fileContent;
+	private int currentLocation = 0;
+	private boolean fileComplete = false;
+	private String lexeme = "";
+	private String state = "1";
+	private String tokens="";
+	private String errorMessages="";
+
+	//Constructor
+	public Lexer(char[] fileContent){
+
+		this.fileContent = fileContent;
 		
-		//get file from stream into char array
-		String filePath = "C:/Users/Si/git/compiler/compiler/test.txt";
-		String tokenFilePath = "C:/Users/Si/git/compiler/compiler/tokens.txt";
-		String errorFilePath = "C:/Users/Si/git/compiler/compiler/errorMessages.txt";
-		try {
-			fileContent = ReadFileToCharArray(filePath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		printFileContent();
+		//printFileContent();
 		System.out.println("number of characters: " + fileContent.length);
 		// create lookup table
 		createLookupTable();
-		
-		//call next token until reach end of file
-		while(!fileComplete){
-			Token t = nextToken();
+	}
+	
+	//checks if we reached EOF
+	public boolean fileComplete(){
+		return fileComplete;
+	}
+	
+	//returns next token
+	public Token getNextToken(){
+		//get the next token unless reach end of file
+		Token t = new Token("blank", "blank", 1, 1);
+		if(!fileComplete){
+			t = nextToken();
 			if (t != null){
 				if (!t.getType().equals("error")){
 					System.out.println(t.toString());
-					tokens += t.toString();
+					setTokens(getTokens() + t.toString());
 				}
 			}
 			else{
@@ -48,12 +45,11 @@ public class Lex {
 			}
 			//if token type is an error, do not write to file
 		}
-		WriteToFile(tokenFilePath, tokens);
-		WriteToFile(errorFilePath, errorMessages);
+		return t;
 	}
 	
-	//returns next Token
-	static Token nextToken(){
+	//helper method: returns next Token
+	private Token nextToken(){
 		
 		Token newToken = null;
 		boolean errorFound = false;
@@ -76,7 +72,7 @@ public class Lex {
 					lexeme = lexeme.trim();
 					String error = "Error occurred with the following set of characters: " + lexeme 
 							+ " at location " + (currentLocation-lexeme.length()) + "\r\n";
-					errorMessages += error;
+					setErrorMessages(getErrorMessages() + error);
 					System.out.println(error);
 					System.out.println("Commencing panic mode token recovery...");
 					state = "1";
@@ -103,7 +99,6 @@ public class Lex {
 							lexeme = lexeme.trim();
 							newToken = createToken(oldState);
 						}
-	
 					}
 				}
 			}
@@ -115,8 +110,8 @@ public class Lex {
 	return newToken;	
 	}
 	
-	 //returns nextChar;
-	static String nextChar(){
+	//returns nextChar;
+	private String nextChar(){
 		if (currentLocation == fileContent.length){
 			return null;
 		}
@@ -128,7 +123,7 @@ public class Lex {
 	}
 	
 	//converts string to index location on the x-axis
-	static int convertColumnToXIndex(String s){
+	private int convertColumnToXIndex(String s){
 		int i = 99;
 		if (s.equals(""))
 			i = 0;
@@ -184,7 +179,7 @@ public class Lex {
 	}
 
 	//converts string to index location on the y-axis
-	static int convertStateToYIndex(String s){
+	private int convertStateToYIndex(String s){
 		int i = 0;
 		if (!s.equals(""))
 			i = Integer.parseInt(s);
@@ -192,7 +187,7 @@ public class Lex {
 	}
 	
 	//checks if state is a final state
-	static boolean isFinalState(int yIndex){
+	private boolean isFinalState(int yIndex){
 		boolean isFinal = false;
 		int xIndex = 23;
 		// if s is one of the final states, return true
@@ -203,7 +198,7 @@ public class Lex {
 	}
 	
 	//checks if state needs to back up
-	static boolean isBackup(int yIndex){
+	private boolean isBackup(int yIndex){
 		boolean isBackup = false;
 		int xIndex = 24;
 		// if s is one of the final states, return true
@@ -214,12 +209,12 @@ public class Lex {
 	}
 	
 	//checks if string is an integer
-	static boolean isInteger(String s) {
+	private boolean isInteger(String s) {
 	    return isInteger(s,10);
 	}
 	
 	//helper method for string is integer check
-	public static boolean isInteger(String s, int radix) {
+	private boolean isInteger(String s, int radix) {
 	    if(s.isEmpty()) return false;
 	    for(int i = 0; i < s.length(); i++) {
 	        if(i == 0 && s.charAt(i) == '-') {
@@ -230,12 +225,14 @@ public class Lex {
 	    }
 	    return true;
 	}
-	static Token createToken(String s){
+	
+	//creates token
+	private Token createToken(String s){
 		// check final state to see Token type
 		Token t;
 		if(s.equals("5")){
 			if (isInteger(lexeme)){
-				if (Integer.parseInt(lexeme) > 0){
+				if (Integer.parseInt(lexeme) >= 0){
 					t = new Token("INT", lexeme, currentLocation-lexeme.length(), lexeme.length());
 				}
 				else {
@@ -296,7 +293,7 @@ public class Lex {
 			t = new Token("error", lexeme, currentLocation-lexeme.length(), lexeme.length());
 			String error = "Error occurred with the following set of characters: " + lexeme 
 					+ " at location " + (currentLocation-lexeme.length()) + "\r\n";
-			errorMessages += error;
+			setErrorMessages(getErrorMessages() + error);
 			System.out.println(error);
 			System.out.println("Commencing panic mode token recovery...");
 		}
@@ -377,15 +374,8 @@ public class Lex {
 		return t;
 	}
 
-	//returns corresponding entry in 2D array
-	static String tableLookup(int state, int column){
-		String s = lookupTable[state][column];
-		System.out.println("tableLookup: " + s);
-		return s;
-	}
-	
 	//prints the lookup table
-	static void printLookupTable(){
+	private void printLookupTable(){
 		for(int i = 0; i<lookupTable.length; i++){
 			for(int j = 0; j <lookupTable[i].length; j++){
 				System.out.print(lookupTable[i][j] + ",");
@@ -395,7 +385,7 @@ public class Lex {
 	}
 	
 	//creates the lookup table
-	static void createLookupTable(){
+	private void createLookupTable(){
 
 		String tempArray0[] = {"","[1-9]", "0", "[a-zA-Z]", ".", "/", "*", "<", ">", "=", "_", ";", ",", "+", "-", "{", "}", "(", ")", "[", "]", "\n || null", " ", "final", "backup"};
 		String tempArray1[] = {"1", "2", "9", "10", "27", "13", "27", "19", "22", "24", "12", "27", "27", "27", "27", "27", "27", "27", "27", "27", "27", "1", "1", "no", "no"};
@@ -459,51 +449,28 @@ public class Lex {
 	}
 	
 	//prints file content
-	static void printFileContent(){
+	public void printFileContent(){
 		for (int i = 0; i<fileContent.length; i++)
 			System.out.print(fileContent[i]);
 		System.out.println();
 	}
-	
-	//returns char array of file read
-	static char[] ReadFileToCharArray(String filePath) throws IOException {
-		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new FileReader(filePath));
- 
-		char[] buf = new char[10];
-		int numRead = 0;
-		while ((numRead = reader.read(buf)) != -1) {
-			String readData = String.valueOf(buf, 0, numRead);
-			fileData.append(readData);
-			buf = new char[1024];
-		}
-		fileData.append("  ");
-		reader.close();
-		return  fileData.toString().toCharArray();	
+
+	public String getTokens() {
+		return tokens;
+	}
+
+	private void setTokens(String tokens) {
+		this.tokens = tokens;
+	}
+
+	public String getErrorMessages() {
+		return errorMessages;
+	}
+
+	private void setErrorMessages(String errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 	
-	static void WriteToFile(String filePath, String c){
-		try {
-			 
-			String content = c;
- 
-			File file = new File(filePath);
- 
-			// if file doesnt exist, then create it
-			if (!file.exists()) {
-				file.createNewFile();
-			}
- 
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(content);
-			bw.close();
- 
-			System.out.println("Done Writing to " + filePath);
- 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+
 	
 }

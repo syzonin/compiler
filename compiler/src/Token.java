@@ -29,6 +29,76 @@ public class Token {
 		return length;
 	}
 	
+	public boolean inFirst(NonTerminal t){
+		if (t.isInFirst(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inFollow(NonTerminal t){
+		if (t.isInFollow(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS1(NonTerminal t){
+		if (t.isInRHS1(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS2(NonTerminal t){
+		if (t.isInRHS2(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS3(NonTerminal t){
+		if (t.isInRHS3(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS4(NonTerminal t){
+		if (t.isInRHS4(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS5(NonTerminal t){
+		if (t.isInRHS5(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inRHS6(NonTerminal t){
+		if (t.isInRHS6(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean inUnion(NonTerminal t){
+		if (t.isInFirst(type) || t.isInFollow(type))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean equals(String s){
+		if (type.equals(s))
+			return true;
+		else
+			return false;
+	}
+	
 	public String toString(){
 		String ret = "Token type: " + type + ", lexeme: " + lexeme + ", count: " + count +", length: " + length + "\r\n";
 		return ret;

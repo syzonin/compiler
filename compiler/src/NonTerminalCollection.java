@@ -3,353 +3,283 @@ import java.util.ArrayList;
 
 public class NonTerminalCollection {
 	
+	public NonTerminal ClassDeclList;
 	public NonTerminal ClassDecl;
+	public NonTerminal ClassMemberDeclList;
 	public NonTerminal ProgBody;
+	public NonTerminal FuncDefList;
 	public NonTerminal FuncBody;
-	public NonTerminal Statement;
+	public NonTerminal FuncBodyMemberList;
+	public NonTerminal FuncBodyMember;
+	public NonTerminal FuncBodyMember2;
+	public NonTerminal FuncBodyMember3;
+	public NonTerminal StatementList;
+	public NonTerminal Statement2;
 	public NonTerminal StatBlock;
-	public NonTerminal Sign;
-	public NonTerminal Factor;
-	public NonTerminal Fparams;
-	public NonTerminal FParamsTail;
-	public NonTerminal AParamsTail;
-	public NonTerminal AssignOp;
-	public NonTerminal AddOp;
-	public NonTerminal Prog;
-	public NonTerminal VarDecl;
-	public NonTerminal FuncDef;
-	public NonTerminal Term;
-	public NonTerminal Expr;
+	public NonTerminal Expr2;
 	public NonTerminal ArithExpr2;
+	public NonTerminal Sign;
 	public NonTerminal Term2;
-	public NonTerminal Idnest;
+	public NonTerminal Factor;
+	public NonTerminal Factor2;
+	public NonTerminal Variable;
+	public NonTerminal IdnestList;
+	public NonTerminal IndiceList;
 	public NonTerminal Indice;
+	public NonTerminal ArraySizeList;
 	public NonTerminal ArraySize;
 	public NonTerminal Type;
-	public NonTerminal Aparams;
+	public NonTerminal FParams;
+	public NonTerminal AParams;
+	public NonTerminal FParamsTailList;
+	public NonTerminal FParamsTail;
+	public NonTerminal AParamsTailList;
+	public NonTerminal AParamsTail;
 	public NonTerminal RelOp;
+	public NonTerminal AddOp;
 	public NonTerminal MultOp;
+	public NonTerminal ClassMemberDecl;
 	public NonTerminal FuncHead;
-	public NonTerminal Variable;
-	public NonTerminal AssignStat;
+	public NonTerminal Statement;
+	public NonTerminal Prog;
+	public NonTerminal FuncDef;
+	public NonTerminal Term;
 	public NonTerminal ArithExpr;
-	public NonTerminal RelExpr;
-	
-	public ArrayList<NonTerminal> NonTerminalArray = new ArrayList<NonTerminal>();
+	public NonTerminal Expr;
+	public NonTerminal ClassMemberDecl2;
+
 
 	public NonTerminalCollection() {
+
+		String[] first1 = {"class"};
+		String[] follow1 = {"program"};
+		ClassDeclList = new NonTerminal("ClassDeclList", first1, follow1, first1, null, null, null, null, null);
 		
-		ArrayList<String> first = new ArrayList<String>();
-		ArrayList<String> follow = new ArrayList<String>();
+		String[] first2 = {"class"};
+		String[] follow2 = {"class", "program"};
+		ClassDecl = new NonTerminal("ClassDecl", first2, follow2, first2, null, null, null, null, null);
 		
-		//1
-		ClassDecl = new NonTerminal("ClassDecl");
-		ClassDecl.addFirst("class");
-		ClassDecl.addFollow("program");
-
-		//2
-		ProgBody = new NonTerminal("ProgBody");
-		ProgBody.addFirst("program");
-		ProgBody.addFollow("eof");
-
-
-		//3
-		FuncBody = new NonTerminal("FuncBody");
-		FuncBody.addFirst("{");
-		FuncBody.addFollow("int");
-		FuncBody.addFollow("float");
-		FuncBody.addFollow("id");
-		FuncBody.addFollow("semi");
-
-		//4
-		Statement = new NonTerminal("Statement");
-		Statement.addFirst("if");
-		Statement.addFirst("for");
-		Statement.addFirst("get");
-		Statement.addFirst("put");
-		Statement.addFirst("return");
-		Statement.addFirst("id");
-		Statement.addFollow("closecur");
-		Statement.addFollow("else");
-		Statement.addFollow("semi");
-
+		String[] first3 = {"int", "float", "id"};
+		String[] follow3 = {"int", "float", "id", "closecur"};
+		ClassMemberDecl = new NonTerminal("ClassMemberDecl", first3, follow3, first3, null, null, null, null, null);
 		
-		//5
-		StatBlock = new NonTerminal("StatBlock");
-		StatBlock.addFirst("opencur");
-		StatBlock.addFirst("epsilon");
-		StatBlock.addFirst("if");
-		StatBlock.addFirst("for");
-		StatBlock.addFirst("get");
-		StatBlock.addFirst("put");
-		StatBlock.addFirst("return");
-		StatBlock.addFirst("id");
-		StatBlock.addFollow("else");
-		StatBlock.addFollow("semi");
+		String[] first4 = {"openpar", "opensq", "semi"};
+		String[] rhs4_1 = {"opensq", "semi"};
+		String[] rhs4_2 = {"openpar"};
+		String[] follow4 = {"int", "float", "id", "closecur"};
+		ClassMemberDecl2 = new NonTerminal("ClassMemberDecl2", first4, follow4, rhs4_1, rhs4_2, null, null, null, null);
 		
-		//6
-		Sign = new NonTerminal("Sign");
-		Sign.addFirst("add");
-		Sign.addFirst("sub");
-		Sign.addFollow("num");
-		Sign.addFollow("openpar");
-		Sign.addFollow("not");
-		Sign.addFollow("id");
-		Sign.addFollow("add");
-		Sign.addFollow("sub");
+		String[] first5 = {"int", "float", "id"};
+		String[] follow5 = {"closecur"};
+		ClassMemberDeclList = new NonTerminal("ClassMemberDeclList", first5, follow5, first5, null, null, null, null, null);
 		
-		//7
-		Factor = new NonTerminal("Factor");
-		Factor.addFirst("num");
-		Factor.addFirst("openpar");
-		Factor.addFirst("not");
-		Factor.addFirst("id");
-		Factor.addFirst("add");
-		Factor.addFirst("sub");
-		Factor.addFollow("mul");
-		Factor.addFollow("div");
-		Factor.addFollow("and");
-
-		//8
-		Fparams = new NonTerminal("Fparams");
-		Fparams.addFirst("epsilon");
-		Fparams.addFirst("int");
-		Fparams.addFirst("float");
-		Fparams.addFirst("id");
-		Fparams.addFollow("closepar");
-
-		//9
-		FParamsTail = new NonTerminal("FParamsTail");
-		FParamsTail.addFirst("comma");
-		FParamsTail.addFollow("closepar");
-
-		//10
-		AParamsTail = new NonTerminal("AParamsTail");
-		AParamsTail.addFirst("comma");
-		AParamsTail.addFollow("closepar");
-
-		//11
-		AssignOp = new NonTerminal("AssignOp");
-		AssignOp.addFirst("assignop");
-		AssignOp.addFollow("num");
-		AssignOp.addFollow("openpar");
-		AssignOp.addFollow("not");
-		AssignOp.addFollow("id");
-		AssignOp.addFollow("add");
-		AssignOp.addFollow("sub");
-
-		//12
-		AddOp = new NonTerminal("AddOp");
-		AddOp.addFirst("add");
-		AddOp.addFirst("sub");
-		AddOp.addFirst("or");
-		AddOp.addFollow("num");
-		AddOp.addFollow("openpar");
-		AddOp.addFollow("not");
-		AddOp.addFollow("id");
-		AddOp.addFollow("add");
-		AddOp.addFollow("sub");
-
-		//13
-		Prog = new NonTerminal("Prog");
-		Prog.addFirst("class");
-		Prog.addFollow("eof");
-
-		//14
-		VarDecl = new NonTerminal("VarDecl");
-		VarDecl.addFirst("int");
-		VarDecl.addFirst("float");
-		VarDecl.addFirst("id");
-		VarDecl.addFollow("semi");
-		VarDecl.addFollow("if");
-		VarDecl.addFollow("for");
-		VarDecl.addFollow("get");
-		VarDecl.addFollow("put");
-		VarDecl.addFollow("return");
-		VarDecl.addFollow("id");
-		VarDecl.addFollow("int");
-		VarDecl.addFollow("float");
+		String[] first6 = {"int", "float", "id"};
+		String[] follow6 = {"eof"};
+		FuncDefList = new NonTerminal("FuncDefList", first6, follow6, first6, null, null, null, null, null);
 		
-		//15
-		FuncDef = new NonTerminal("FuncDef");
-		FuncDef.addFirst("int");
-		FuncDef.addFirst("float");
-		FuncDef.addFirst("id");
-		FuncDef.addFollow("closecur");
-		FuncDef.addFollow("eof");
-
-		//16
-		Term = new NonTerminal("Term");
-		Term.addFirst("num");
-		Term.addFirst("openpar");
-		Term.addFirst("not");
-		Term.addFirst("id");
-		Term.addFirst("add");
-		Term.addFirst("sub");
-		Term.addFollow("add");
-		Term.addFollow("sub");
-		Term.addFollow("or");
-
-		//17
-		Expr = new NonTerminal("Expr");
-		Expr.addFirst("num");
-		Expr.addFirst("openpar");
-		Expr.addFirst("not");
-		Expr.addFirst("id");
-		Expr.addFirst("add");
-		Expr.addFirst("sub");
-		Expr.addFollow("comma");
-		Expr.addFollow("closepar");
-		Expr.addFollow("semi");
-
-		//18
-		ArithExpr2 = new NonTerminal("ArithExpr2");
-		ArithExpr2.addFirst("epsilon");
-		ArithExpr2.addFirst("add");
-		ArithExpr2.addFirst("sub");
-		ArithExpr2.addFirst("or");
-		ArithExpr2.addFollow("closesq");
-		ArithExpr2.addFollow("closepar");
-		ArithExpr2.addFollow("relop_e");
-		ArithExpr2.addFollow("lege");
-		ArithExpr2.addFollow("relop_l");
-		ArithExpr2.addFollow("relop_g");
-		ArithExpr2.addFollow("relop_le");
-		ArithExpr2.addFollow("relop_ge");
-		ArithExpr2.addFollow("semi");
-		ArithExpr2.addFollow("comma");
-		ArithExpr2.addFollow("eof");
+		String[] first7 = {"program"};
+		String[] follow7 = {"eof"};
+		ProgBody = new NonTerminal("ProgBody", first7, follow7, first7, null, null, null, null, null);
 		
-		//19
-		Term2 = new NonTerminal("Term2");
-		Term2.addFirst("epsilon");
-		Term2.addFirst("mul");
-		Term2.addFirst("div");
-		Term2.addFirst("and");
-		Term2.addFollow("add");
-		Term2.addFollow("sub");
-		Term2.addFollow("or");
+		String[] first8 = {"int", "float", "id"};
+		String[] follow8 = {"opencur"};
+		FuncHead = new NonTerminal("FuncHead", first8, follow8, first8, null, null, null, null, null);
 		
-		//20
-		Idnest = new NonTerminal("Idnest");
-		Idnest.addFirst("id");
-		Idnest.addFollow("id");
+		String[] first9 = {"int", "float", "id"};
+		String[] follow9 = {"int", "float", "id", "eof"};
+		FuncDef = new NonTerminal("FuncDef", first9, follow9, first9, null, null, null, null, null);
 		
-		//21
-		Indice = new NonTerminal("Indice");
-		Indice.addFirst("opensq");
-		Indice.addFollow("dot");
-		Indice.addFollow("assignop");
-		Indice.addFollow("closepar");
-		Indice.addFollow("mul");
-		Indice.addFollow("div");
-		Indice.addFollow("and");
-
-		//22
-		ArraySize = new NonTerminal("ArraySize");
-		ArraySize.addFirst("opensq");
-		ArraySize.addFollow("comma");
-		ArraySize.addFollow("semi");
-
-		//23
-		Type = new NonTerminal("Type");
-		Type.addFirst("int");
-		Type.addFirst("float");
-		Type.addFirst("id");
-		Type.addFollow("id");
-
-		//24
-		Aparams = new NonTerminal("Aparams");
-		Aparams.addFirst("epsilon");
-		Aparams.addFirst("num");
-		Aparams.addFirst("openpar");
-		Aparams.addFirst("not");
-		Aparams.addFirst("id");
-		Aparams.addFirst("add");
-		Aparams.addFirst("sub");
-		Aparams.addFollow("closepar");
+		String[] first10 = {"opencur"};
+		String[] follow10 = {"semi"};
+		FuncBody = new NonTerminal("FuncBody", first10, follow10, first10, null, null, null, null, null);
 		
-		//25
-		RelOp = new NonTerminal("RelOp");
-		RelOp.addFirst("relop_e");
-		RelOp.addFirst("lege");
-		RelOp.addFirst("relop_l");
-		RelOp.addFirst("relop_g");
-		RelOp.addFirst("relop_le");
-		RelOp.addFirst("relop_ge");
-		RelOp.addFollow("num");
-		RelOp.addFollow("openpar");
-		RelOp.addFollow("not");
-		RelOp.addFollow("id");
-		RelOp.addFollow("add");
-		RelOp.addFollow("sub");
-
-		//26
-		MultOp = new NonTerminal("MultOp");
-		MultOp.addFirst("mul");
-		MultOp.addFirst("div");
-		MultOp.addFirst("and");
-		MultOp.addFollow("num");
-		MultOp.addFollow("openpar");
-		MultOp.addFollow("not");
-		MultOp.addFollow("id");
-		MultOp.addFollow("add");
-		MultOp.addFollow("sub");
-
-		//27
-		FuncHead = new NonTerminal("FuncHead");
-		FuncHead.addFirst("int");
-		FuncHead.addFirst("float");
-		FuncHead.addFirst("id");
-		FuncHead.addFollow("opencur");
+		String[] first11 = {"int", "float", "id", "if", "for", "get", "put", "return"};
+		String[] rhs11_1 = {"if", "for", "get", "put", "return"};
+		String[] rhs11_2 = {"id"};
+		//String[] rhs11_2 = {"id", "opensq", "dot", "assignop"};
+		String[] rhs11_3 = {"float"};
+		String[] rhs11_4 = {"int"};
+		String[] follow11 = {"int", "float", "id", "if", "for", "get", "put", "return", "closecur"};
+		FuncBodyMember = new NonTerminal("FuncBodyMember", first11, follow11, rhs11_1, rhs11_2, rhs11_3, rhs11_4, null, null);
 		
-		//28
-		Variable = new NonTerminal("Variable");
-		Variable.addFirst("id");
-		Variable.addFollow("assignop");
-		Variable.addFollow("closecur");
-		Variable.addFollow("mul");
-		Variable.addFollow("div");
-		Variable.addFollow("and");
-
-		//29
-		AssignStat = new NonTerminal("AssignStat");
-		AssignStat.addFirst("id");
-		AssignStat.addFollow("semi");
-		AssignStat.addFollow("closepar");
-
-		//30
-		ArithExpr = new NonTerminal("ArithExpr");
-		ArithExpr.addFirst("num");
-		ArithExpr.addFirst("openpar");
-		ArithExpr.addFirst("not");
-		ArithExpr.addFirst("id");
-		ArithExpr.addFirst("add");
-		ArithExpr.addFirst("sub");
-		ArithExpr.addFollow("closesq");
-		ArithExpr.addFollow("closepar");
-		ArithExpr.addFollow("relop_e");
-		ArithExpr.addFollow("lege");
-		ArithExpr.addFollow("relop_l");
-		ArithExpr.addFollow("relop_g");
-		ArithExpr.addFollow("relop_le");
-		ArithExpr.addFollow("relop_ge");
-		ArithExpr.addFollow("semi");
-		ArithExpr.addFollow("comma");
-		ArithExpr.addFollow("eof");
-
-		//31
-		RelExpr = new NonTerminal("RelExpr");
-		RelExpr.addFirst("num");
-		RelExpr.addFirst("openpar");
-		RelExpr.addFirst("not");
-		RelExpr.addFirst("id");
-		RelExpr.addFirst("add");
-		RelExpr.addFirst("sub");
-		RelExpr.addFollow("semi");
-		RelExpr.addFollow("comma");
-		RelExpr.addFollow("closepar");
+		String[] first12 = {"id", "opensq", "dot", "assignop"};
+		String[] rhs12_1 = {"opensq", "dot", "assignop"};
+		String[] rhs12_2 = {"id"};
+		String[] follow12 = {"int", "float", "id", "if", "for", "get", "put", "return", "closecur"};
+		FuncBodyMember2 = new NonTerminal("FuncBodyMember2", first12, follow12, rhs12_1, rhs12_2, null, null, null, null);
 		
+		String[] first13 = {"dot", "assignop"};
+		String[] rhs13_1 = {"assignop"};
+		String[] rhs13_2 = {"dot"};
+		String[] follow13 = {"int", "float", "id", "if", "for", "get", "put", "return", "closecur"};
+		FuncBodyMember3 = new NonTerminal("FuncBodyMember3", first13, follow13, rhs13_1, rhs13_2, null, null, null, null);
+		
+		String[] first14 = {"int", "float", "id", "if", "for", "get", "put", "return"};
+		String[] follow14 = {"closecur"};
+		FuncBodyMemberList = new NonTerminal("FuncBodyMemberList", first14, follow14, first14, null, null, null, null, null);
+		
+		String[] first15 = {"int", "float", "id"};
+		String[] rhs15_1 = {"float"};
+		String[] rhs15_2 = {"int"};
+		String[] rhs15_3 = {"id"};
+		String[] follow15 = {"id"};
+		Type = new NonTerminal("Type", first15, follow15, rhs15_1, rhs15_2, rhs15_3, null, null, null);
+		
+		String[] first16 = {"opensq"};
+		String[] follow16 = {"comma", "semi", "closepar"};
+		ArraySizeList = new NonTerminal("ArraySizeList", first16, follow16, first16, null, null, null, null, null);
+		
+		String[] first17 = {"id", "if", "for", "get", "put", "return"};
+		String[] rhs17_1 = {"if", "for", "get", "put", "return"};
+		String[] rhs17_2 = {"id"};
+		String[] follow17 = {"id", "if", "for", "get", "put", "return", "else", "semi", "closecur"};
+		Statement = new NonTerminal("Statement", first17, follow17, rhs17_1, rhs17_2, null, null, null, null);
+		
+		String[] first18 = {"if", "for", "get", "put", "return"};
+		String[] rhs18_1 = {"if"};
+		String[] rhs18_2 = {"for"};
+		String[] rhs18_3 = {"get"};
+		String[] rhs18_4 = {"put"};
+		String[] rhs18_5 = {"return"};
+		String[] follow18 = {"id", "if", "for", "get", "put", "return", "else", "semi", "int", "float", "closecur"};
+		Statement2 = new NonTerminal("Statement2", first18, follow18, rhs18_1, rhs18_2, rhs18_3, rhs18_4, rhs18_5, null);
+		
+		String[] first19 = {"opencur", "id", "if", "for", "get", "put", "return"};
+		String[] rhs19_1 = {"id", "if", "for", "get", "put", "return"};
+		String[] rhs19_2 = {"opencur"};
+		String[] follow19 = {"else", "semi"};
+		StatBlock = new NonTerminal("StatBlock", first19, follow19, rhs19_1, rhs19_2, null, null, null, null);
+		
+		String[] first20 = {"id", "if", "for", "get", "put", "return"};
+		String[] follow20 = {"closecur"};
+		StatementList = new NonTerminal("StatementList", first20, follow20, first20, null, null, null, null, null);
+		
+		String[] first21 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		String[] follow21 = {"semi", "comma", "closepar"};
+		Expr = new NonTerminal("Expr", first21, follow21, first21, null, null, null, null, null);
+		
+		String[] first22 = {"relop_e", "relop_lege", "relop_l", "relop_g", "relop_le", "relop_ge"};
+		String[] follow22 = {"semi", "comma", "closepar"};
+		Expr2 = new NonTerminal("Expr2", first22, follow22, first22, null, null, null, null, null);
+		
+		String[] first23 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		String[] follow23 = {"closesq", "closepar", "relop_e", "relop_lege", 
+				"relop_l", "relop_g", "relop_le", "relop_ge", "comma", "semi"};
+		ArithExpr = new NonTerminal("ArithExpr", first23, follow23, first23, null, null, null, null, null);
+		
+		String[] first24 = {"add", "sub", "or"};
+		String[] follow24 = {"closesq", "closepar", "relop_e", "relop_lege", 
+				"relop_l", "relop_g", "relop_le", "relop_ge", "comma", "semi"};
+		ArithExpr2 = new NonTerminal("ArithExpr2", first24, follow24, first24, null, null, null, null, null);
+		
+		String[] first25 = {"add", "sub"};
+		String[] rhs25_1 = {"add"};
+		String[] rhs25_2 = {"sub"};
+		String[] follow25 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		Sign = new NonTerminal("Sign", first25, follow25, rhs25_1, rhs25_2, null, null, null, null);
+		
+		String[] first26 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		String[] follow26 = {"or", "add", "sub", "semi", "closepar", "comma", "relop_l", "relop_e", "relop_g", 
+				"relop_ge", "relop_le", "relop_lege", "closecur"};
+		Term = new NonTerminal("Term", first26, follow26, first26, null, null, null, null, null);
+		
+		String[] first27 = {"mul", "div", "and"};
+		String[] follow27 = {"or", "add", "sub", "semi", "closepar", "comma", "relop_l", "relop_e", "relop_g", 
+				"relop_ge", "relop_le", "relop_lege", "closecur", "closesq"};
+		Term2 = new NonTerminal("Term2", first27, follow27, first27, null, null, null, null, null);
+		
+		String[] first28 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		String[] rhs28_1 = {"openpar"};
+		String[] rhs28_2 = {"id"};
+		String[] rhs28_3 = {"num", "INT"};
+		String[] rhs28_4 = {"not"};
+		String[] rhs28_5 = {"add", "sub"};
+		String[] follow28 = {"mul", "div", "and", "or", "add", "sub", "semi", "closepar", "comma", "relop_l", 
+				"relop_e", "relop_g", "relop_ge", "relop_le", "relop_lege", "closesq"};
+		Factor = new NonTerminal("Factor", first28, follow28, rhs28_1, rhs28_2, rhs28_3, rhs28_4, rhs28_5, null);
+		
+		String[] first29 = {"openpar"};
+		String[] follow29 = {"mul", "div", "and", "or", "add", "sub", "semi", "closepar", "comma", "relop_l", 
+				"relop_e", "relop_g", "relop_ge", "relop_le", "relop_lege", "closesq"};
+		Factor2 = new NonTerminal("Factor2", first29, follow29, first29, null, null, null, null, null);
+		
+		String[] first30 = {"dot", "opensq"};
+		String[] rhs30_1 = {"dot"};
+		String[] rhs30_2 = {"opensq"};
+		String[] follow30 = {"assignop", "closepar", "assignop", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
+				"relop_ge", "relop_le", "relop_lege", "closesq", "add", "sub", "or", "mul", "div", "and"};
+		IdnestList = new NonTerminal("IdnestList", first30, follow30, rhs30_1, rhs30_2, null, null, null, null);
+		
+		String[] first31 = {"id"};
+		String[] follow31 = {"closepar", "assignop"};
+		Variable = new NonTerminal("Variable", first31, follow31, first31, null, null, null, null, null);
+		
+		String[] first32 = {"opensq"};
+		String[] follow32 = {"assignop", "closepar", "assignop", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
+				"relop_ge", "relop_le", "relop_lege", "closesq", "add", "sub", "or", "mul", "div", "and", "dot"};
+		IndiceList = new NonTerminal("IndiceList", first32, follow32, first32, null, null, null, null, null);
+		
+		String[] first33 = {"opensq"};
+		String[] follow33 = {"opensq", "closepar", "assignop", "semi", "comma", "openpar", "relop_l", "relop_e", "relop_g", 
+				"relop_ge", "relop_le", "relop_lege", "closesq", "add", "sub", "or", "mul", "div", "and", "dot"};
+		Indice = new NonTerminal("Indice", first33, follow33, first33, null, null, null, null, null);
+		
+		String[] first34 = {"opensq"};
+		String[] follow34 = {"opensq", "semi", "closepar", "comma"};
+		ArraySize = new NonTerminal("ArraySize", first34, follow34, first34, null, null, null, null, null);
+		
+		String[] first35 = {"int", "float", "id"};
+		String[] follow35 = {"closepar"};
+		FParams = new NonTerminal("FParams", first35, follow35, first35, null, null, null, null, null);
+		
+		String[] first36 = {"comma"};
+		String[] follow36 = {"closepar"};
+		FParamsTailList = new NonTerminal("FParamsTailList", first36, follow36, first36, null, null, null, null, null);
+		
+		String[] first37 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		String[] follow37 = {"closepar"};
+		AParams = new NonTerminal("AParams", first37, follow37, first37, null, null, null, null, null);
+		
+		String[] first38 =  {"comma"};
+		String[] follow38 = {"closepar"};
+		AParamsTailList = new NonTerminal("AParamsTailList", first38, follow38, first38, null, null, null, null, null);
+		
+		String[] first39 =  {"comma"};
+		String[] follow39 = {"comma", "closepar"};
+		FParamsTail = new NonTerminal("FParamsTail", first39, follow39, first39, null, null, null, null, null);
+		
+		String[] first40 =  {"comma"};
+		String[] follow40 = {"comma", "closepar"};
+		AParamsTail = new NonTerminal("AParamsTail", first40, follow40, first40, null, null, null, null, null);
+		
+		String[] first41 =  {"relop_e", "relop_lege", "relop_l", "relop_g", "relop_le", "relop_ge"};
+		String[] rhs41_1 = {"relop_e"};
+		String[] rhs41_2 = {"relop_lege"};
+		String[] rhs41_3 = {"relop_l"};
+		String[] rhs41_4 = {"relop_g"};
+		String[] rhs41_5 = {"relop_le"};
+		String[] rhs41_6 = {"relop_ge"};
+		String[] follow41 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		RelOp = new NonTerminal("RelOp", first41, follow41, rhs41_1, rhs41_2, rhs41_3, rhs41_4, rhs41_5, rhs41_6);
+		
+		String[] first42 = {"add", "sub", "or"};
+		String[] rhs42_1 = {"or"};
+		String[] rhs42_2 = {"sub"};
+		String[] rhs42_3 = {"add"};
+		String[] follow42 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		AddOp = new NonTerminal("AddOp", first42, follow42, rhs42_1, rhs42_2, rhs42_3, null, null, null);
+		
+		String[] first43 = {"mul", "div", "and"};
+		String[] rhs43_1 = {"and"};
+		String[] rhs43_2 = {"div"};
+		String[] rhs43_3 = {"mul"};
+		String[] follow43 = {"id", "num", "INT", "openpar", "not", "add", "sub"};
+		MultOp = new NonTerminal("MultOp", first43, follow43, rhs43_1, rhs43_2, rhs43_3, null, null, null);
+		
+		String[] first44 = {"class", "program"};
+		String[] follow44 = {"eof"};
+		Prog = new NonTerminal("Prog", first44, follow44, first44, null, null, null, null, null);
+		
+
 	}
-	
 }
