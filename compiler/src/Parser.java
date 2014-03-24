@@ -9,6 +9,9 @@ public class Parser {
 	private int tokenArrayLocation = 0;
 	private Token lookAhead;
 	private Token lookBehind;
+	private Record lastIdnest;
+	private boolean parsedComplete = false;
+	private boolean flush = false;
 
 	
 	public Parser(Lexer l){
@@ -60,6 +63,10 @@ public class Parser {
 			success = true;
 		else
 			success = false;
+		flush = true;
+		table.flushDefinitionBuffer(flush);
+		table.giveAddresses();
+		
 		return success;
 	}
 	
@@ -109,15 +116,8 @@ public class Parser {
 		//case no error detected:
 		if (lookAhead.inUnion(nt)){
 			return true;
-				
 		}
 		//case error detected:
-		//else
-			//write ("syntax error at " lookahead.location)
-			//while (lookahead not in nt.first or nt.follow)
-				//lookahead = nextToken
-			//write ("parsing resumed at " lookahead.location)
-			//return false
 		else {
 			System.out.println("Syntax error at nonterminal: " + lookAhead.getCount() + ". ");
 			System.out.println("Expected: " + nt + ", Got: " + lookAhead);
@@ -126,8 +126,10 @@ public class Parser {
 				lookBehind = lookAhead;
 				lookAhead = nextTokenParser();
 				System.out.println("Skipping: " + lookAhead.getType() + " and " + lookAhead.getLexeme() + " is not in the first of follow set of " + nt.getSymbol());
+				errorMessages += "Skipping token: " + lookAhead;
 			}
 			System.out.println("Parsing resumed at: " + lookAhead.getCount() + ".");
+			errorMessages += "Parsing resumed at: " + lookAhead.getCount() + ".";
 			return false;
 		} 
 	}
@@ -595,12 +597,12 @@ public class Parser {
 	}
 	
 	//14. FuncBodyMember3 -> . Variable = Expr ; | = Expr ;
-	private boolean FuncBodyMember3(Table table){
+	private boolean FuncBodyMember3(Record call, Table table){
 		System.out.println("Calling: FuncBodyMember3 -> . Variable = Expr ; | = Expr ;");
 		boolean success = skipErrors(nt.FuncBodyMember3);
 		if (lookAhead.inRHS1(nt.FuncBodyMember3)){
 			//case: FuncBodyMember3 -> = Expr ;
-			if (match("assignop") && Expr() && match("semi")){
+			if (match("assignop") && Expr(table) && match("semi")){
 				System.out.println("FuncBodyMember3 -> = Expr ;");
 				parseInfo += "FuncBodyMember3 -> = Expr ;" + "\r\n";
 			}
@@ -611,7 +613,20 @@ public class Parser {
 		}
 		else if (lookAhead.inRHS2(nt.FuncBodyMember3)){
 			//case: FuncBodyMember3 -> . Variable = Expr ;
-			if (match("dot") && Variable() && match("assignop") && Expr() && match("semi")){
+			Table newScope = new Table();
+			boolean b1 = match("dot");
+			
+			/*
+			if (table.search(call)){
+				newScope = table.find(call).getLocal();
+			} */
+			
+			boolean b2 = Variable(newScope);
+			boolean b3 = match("assignop");
+			boolean b4 = Expr(table);
+			boolean b5 = match("semi");
+			
+			if (b1 && b2 && b3 && b4 && b5){
 				System.out.println("FuncBodyMember3 -> . Variable = Expr ; ");
 				parseInfo += "FuncBodyMember3 -> . Variable = Expr ;" + "\r\n";
 			}
@@ -632,7 +647,7 @@ public class Parser {
 		System.out.println("Calling: FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList | epsilon");
 		boolean success = skipErrors(nt.FuncBodyMemberList);
 		if (lookAhead.inRHS1(nt.FuncBodyMemberList)){
-			if (FuncBodyMember() && FuncBodyMemberList())
+			if (FuncBodyMember(table) && FuncBodyMemberList(table))
 			{
 				System.out.println("FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList");
 				parseInfo += "FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList" + "\r\n";
@@ -660,6 +675,7 @@ public class Parser {
 		if (lookAhead.inRHS1(nt.Type)){
 			if (match("float"))
 			{
+				record.setType("float");
 				System.out.println("Type -> float");
 				parseInfo += "Type -> float" + "\r\n";
 			}
@@ -671,6 +687,7 @@ public class Parser {
 		else if (lookAhead.inRHS2(nt.Type)){
 			if (match("int"))
 			{
+				record.setType("int");
 				System.out.println("Type -> int");
 				parseInfo += "Type -> int" + "\r\n";
 			}
@@ -682,6 +699,7 @@ public class Parser {
 		else if (lookAhead.inRHS3(nt.Type)){
 			if (match("id"))
 			{
+				record.setType(lookBehind.getLexeme());
 				System.out.println("Type -> id");
 				parseInfo += "Type -> id" + "\r\n";
 			}
@@ -702,7 +720,8 @@ public class Parser {
 		System.out.println("Calling: ArraySizeList ->  ArraySize ArraySizeList | epsilon");
 		boolean success = skipErrors(nt.ArraySizeList);
 		if (lookAhead.inRHS1(nt.ArraySizeList)){
-			if (ArraySize() && ArraySizeList())
+			record.setVarStructure("array");
+			if (ArraySize(record) && ArraySizeList(record))
 			{
 				System.out.println("ArraySizeList ->  ArraySize ArraySizeList");
 				parseInfo += "ArraySizeList ->  ArraySize ArraySizeList " + "\r\n";
@@ -730,7 +749,7 @@ public class Parser {
 		boolean success = skipErrors(nt.Statement);
 		if (lookAhead.inRHS1(nt.Statement)){
 			//case: Statement -> Statement2
-			if (Statement2()){
+			if (Statement2(table)){
 				System.out.println("Statement -> Statement2");
 				parseInfo += "Statement -> Statement2" + "\r\n";
 			}
@@ -741,7 +760,7 @@ public class Parser {
 		}
 		else if (lookAhead.inRHS2(nt.Statement)){
 			//case: Statement -> Variable = Expr ; 
-			if (Variable() && match("assignop") && Expr() && match("semi")){
+			if (Variable(table) && match("assignop") && Expr(table) && match("semi")){
 				System.out.println("Statement -> Variable = Expr ; ");
 				parseInfo += "Statement -> Variable = Expr ; " + "\r\n";
 			}
@@ -767,8 +786,8 @@ public class Parser {
 		boolean success = skipErrors(nt.Statement2);
 		// | if ( Expr ) then StatBlock else StatBlock ;
 		if (lookAhead.inRHS1(nt.Statement2)){
-			if (match("if") && match("openpar") && Expr() && match("closepar") 
-					&& match("then") && StatBlock() && match("else") && StatBlock() && match("semi"))
+			if (match("if") && match("openpar") && Expr(table) && match("closepar") 
+					&& match("then") && StatBlock(table) && match("else") && StatBlock(table) && match("semi"))
 			{
 				System.out.println("Statement ->  if ( Expr ) then StatBlock else StatBlock ;");
 				parseInfo += "Statement ->  if ( Expr ) then StatBlock else StatBlock ;" + "\r\n";
@@ -779,10 +798,30 @@ public class Parser {
 		}
 		// | for ( Type id = Expr ; ArithExpr RelOp ArithExpr ; Variable = Expr ) StatBlock ; 
 		else if (lookAhead.inRHS2(nt.Statement2)){
-			if (match("for") && match("openpar") && Type() && match("id") && 
-					match("assignop") && Expr() && match("semi") && ArithExpr() && RelOp() 
-					&& ArithExpr() && match("semi") && Variable() && match("assignop") 
-					&& Expr() && match("closepar") && StatBlock() && match("semi") )
+			
+			Record record = new Record();
+			boolean b1 = match("for");
+			boolean b2 = match("openpar");
+			boolean b3 = Type(record);
+			boolean b4 = match("id");
+			record.setName(lookBehind.getLexeme());
+			table.insert(record, false, false);
+			boolean b5 = match("assignop");
+			boolean b6 = Expr(table);
+			boolean b7 = match("semi");
+			boolean b8 = ArithExpr(table);
+			boolean b9 = RelOp();
+			boolean b10 = ArithExpr(table);
+			boolean b11 = match("semi");
+			boolean b12 = Variable(table);
+			boolean b13 = match("assignop");
+			boolean b14 = Expr(table);
+			boolean b15 = match("closepar");
+			boolean b16 = StatBlock(table);
+			boolean b17 = match("semi");
+			
+			if (b1 && b2 && b3 && b4 && b5 && b6 && b7 && b8 && b9 && b10
+					&& b11 && b12 && b13 && b14 && b15 && b16 && b17)
 			{
 				System.out.println(" Statement -> for ( Type id = Expr ; ArithExpr RelOp ArithExpr ; " +
 						"Variable = Expr ) StatBlock ;");
@@ -795,7 +834,7 @@ public class Parser {
 		}
 		//| get ( Variable ) ; 
 		else if (lookAhead.inRHS3(nt.Statement2)){
-			if (match("get") && match("openpar") && Variable() && 
+			if (match("get") && match("openpar") && Variable(table) && 
 					match("closepar") && match("semi"))
 			{
 				System.out.println("Statement -> get ( Variable ) ;");
@@ -808,7 +847,7 @@ public class Parser {
 		}
 		//| put ( Expr ) ;
 		else if (lookAhead.inRHS4(nt.Statement2)){
-			if (match("put") && match("openpar") && Expr() && match("closepar") && match("semi"))
+			if (match("put") && match("openpar") && Expr(table) && match("closepar") && match("semi"))
 			{
 				System.out.println("Statement -> put ( Expr ) ; ");
 				parseInfo += "Statement -> put ( Expr ) ;" + "\r\n";
@@ -820,7 +859,7 @@ public class Parser {
 		}
 		//| return ( Expr ) ; 
 		else if (lookAhead.inRHS5(nt.Statement2)){
-			if (match("return") && match("openpar") && Expr() && match("closepar") && match("semi"))
+			if (match("return") && match("openpar") && Expr(table) && match("closepar") && match("semi"))
 			{
 				System.out.println("Statement -> return ( Expr ) ; ");
 				parseInfo += "Statement -> return ( Expr ) ;" + "\r\n";
@@ -838,7 +877,7 @@ public class Parser {
 		System.out.println("Calling: StatBlock -> { StatementList } | Statement | epsilon");
 		boolean success = skipErrors(nt.StatBlock);
 		if (lookAhead.inRHS1(nt.StatBlock)){
-			if (Statement())
+			if (Statement(table))
 			{
 				System.out.println("StatBlock -> Statement");
 				parseInfo += "StatBlock -> Statement" + "\r\n";
@@ -849,7 +888,7 @@ public class Parser {
 			}
 		}
 		else if (lookAhead.inRHS2(nt.StatBlock)){
-			if (match("opencur") && StatementList() && match("closecur"))
+			if (match("opencur") && StatementList(table) && match("closecur"))
 			{
 				System.out.println("StatBlock -> { StatementList }");
 				parseInfo += "StatBlock -> { StatementList }" + "\r\n";
@@ -875,7 +914,7 @@ public class Parser {
 		System.out.println("Calling: StatementList -> Statement StatementList | epsilon");
 		boolean success = skipErrors(nt.StatementList);
 		if (lookAhead.inRHS1(nt.StatementList)){
-			if (Statement() && StatementList())
+			if (Statement(table) && StatementList(table))
 			{
 				System.out.println("StatementList -> Statement StatementList");
 				parseInfo += "StatementList -> Statement StatementList" + "\r\n";
@@ -902,7 +941,7 @@ public class Parser {
 		System.out.println("Calling: Expr -> ArithExpr Expr2");
 		boolean success = skipErrors(nt.Expr);
 		if (lookAhead.inRHS1(nt.Expr)){
-			if (ArithExpr() && Expr2())
+			if (ArithExpr(table) && Expr2(table))
 			{
 				System.out.println("Expr -> ArithExpr Expr2");
 				parseInfo += "Expr -> ArithExpr Expr2" + "\r\n";
@@ -924,7 +963,7 @@ public class Parser {
 		System.out.println("Calling: Expr2 -> RelOp ArithExpr | epsilon");
 		boolean success = skipErrors(nt.Expr2);
 		if (lookAhead.inRHS1(nt.Expr2)){
-			if (RelOp() && ArithExpr())
+			if (RelOp() && ArithExpr(table))
 			{
 				System.out.println("Expr2 -> RelOp ArithExpr");
 				parseInfo += "Expr2 -> RelOp ArithExpr" + "\r\n";
@@ -950,7 +989,7 @@ public class Parser {
 		System.out.println("Calling: ArithExpr -> Term ArithExpr2");
 		boolean success = skipErrors(nt.ArithExpr);
 		if (lookAhead.inRHS1(nt.ArithExpr)){
-			if (Term() && ArithExpr2()){
+			if (Term(table) && ArithExpr2(table)){
 				System.out.println("ArithExpr -> Term ArithExpr2");
 				parseInfo += "ArithExpr -> Term ArithExpr2" + "\r\n";
 			}
@@ -967,11 +1006,11 @@ public class Parser {
 	}
 	
 	//25. ArithExpr2 -> AddOp Term ArithExpr2 | epsilon
-	private boolean ArithExpr2(){
+	private boolean ArithExpr2(Table table){
 		System.out.println("Calling: ArithExpr2 -> AddOp Term ArithExpr2 | epsilon");
 		boolean success = skipErrors(nt.ArithExpr2);
 		if (lookAhead.inRHS1(nt.ArithExpr2)){
-			if (AddOp() && Term() && ArithExpr2()){
+			if (AddOp() && Term(table) && ArithExpr2(table)){
 				System.out.println("ArithExpr -> Term ArithExpr2");
 				parseInfo += "ArithExpr -> Term ArithExpr2" + "\r\n";
 			}
@@ -992,7 +1031,7 @@ public class Parser {
 	}
 
 	//26. Sign -> + | -
-	private boolean Sign(Table table){
+	private boolean Sign(){
 		System.out.println("Calling: Sign -> + | -");
 		boolean success = skipErrors(nt.Sign);
 		if (lookAhead.inRHS1(nt.Sign)){
@@ -1030,7 +1069,7 @@ public class Parser {
 		System.out.println("Calling: Term -> Factor Term2");
 		boolean success = skipErrors(nt.Term);
 		if (lookAhead.inRHS1(nt.Term)){
-			if (Factor() && Term2()){
+			if (Factor(table) && Term2(table)){
 				System.out.println("Term -> Factor Term2");
 				parseInfo += "Term -> Factor Term2" + "\r\n";
 			}
@@ -1051,7 +1090,7 @@ public class Parser {
 		System.out.println("Calling: Term2 -> MultOp Factor Term2 | epsilon");
 		boolean success = skipErrors(nt.Term2);
 		if (lookAhead.inRHS1(nt.Term2)){
-			if (MultOp() && Factor() && Term2()){
+			if (MultOp() && Factor(table) && Term2(table)){
 				System.out.println("Term2 -> MultOp Factor Term2 ");
 				parseInfo += "Term2 -> MultOp Factor Term2 " + "\r\n";
 			}
@@ -1072,12 +1111,12 @@ public class Parser {
 	}
 	
 	//29. Factor -> id IdnestList Factor2 | num | ( ArithExpr ) | not Factor | Sign Factor
-	private boolean Factor(){
+	private boolean Factor(Table table){
 		System.out.println("Calling: Factor -> id Factor3 Factor2| num | ( ArithExpr ) | not Factor | Sign Factor");
 		boolean success = skipErrors(nt.Factor);
 		//| ( ArithExpr )
 		if (lookAhead.inRHS1(nt.Factor)){
-			if (match("openpar") && ArithExpr() && match("closepar"))
+			if (match("openpar") && ArithExpr(table) && match("closepar"))
 			{
 				System.out.println("Factor -> ( ArithExpr )");
 				parseInfo += "Factor -> ( ArithExpr )" + "\r\n";
@@ -1088,7 +1127,11 @@ public class Parser {
 			}
 		}
 		//Factor -> id IdnestList Factor2
-		else if (lookAhead.inRHS2(nt.Factor)){
+		/*else if (lookAhead.inRHS2(nt.Factor)){
+			Record call = new Record();
+			boolean b1 = match("id");
+			call.setName(lookBehind.getLexeme());
+			boolean c2 = IdnestList(call, table);
 			if (match("id") && IdnestList() && Factor2())
 			{
 				System.out.println("Factor -> id IdnestList Factor2");
@@ -1098,19 +1141,33 @@ public class Parser {
 				success = false;
 				System.out.println("In Factor(), did not pass:  Factor -> id IdnestList Factor2");
 			}
-		}
-		//Factor -> id IndiceList Factor2
-		/*else if (lookAhead.inRHS2(nt.Factor)){
-			if (match("id") && IndiceList() && Factor2())
+		}*/
+		//Factor -> id IndiceList IdnestList Factor2
+		else if (lookAhead.inRHS2(nt.Factor)){
+			
+			Record call = new Record();
+			boolean b1 = match("id");
+			call.setName(lookBehind.getLexeme());
+			boolean b2 = IndiceList(call, table);
+			lastIdnest = call;
+			
+			if(parsedComplete) {
+			 	table.search(call);
+			}
+			
+			boolean b3 = IdnestList(call, table);
+			boolean b4 = Factor2(table);
+			
+			if (b1 && b2 && b3 && b4)
 			{
-				System.out.println("Factor -> id IndiceList Factor2");
-				parseInfo += "Factor -> id IndiceList Factor2" + "\r\n";
+				System.out.println("Factor -> id IndiceList IdnestList Factor2");
+				parseInfo += "Factor -> id IndiceList IdnestList Factor2" + "\r\n";
 			}
 			else {
 				success = false;
-				System.out.println("In Factor(), did not pass:  Factor -> id IdnestList Factor2");
+				System.out.println("In Factor(), did not pass:  Factor -> id IndiceList IdnestList Factor2");
 			}
-		}*/
+		}
 		//| num or INT
 		else if (lookAhead.inRHS3(nt.Factor)){
 			if (match("num"))
@@ -1126,7 +1183,7 @@ public class Parser {
 		}
 		//| not Factor
 		else if (lookAhead.inRHS4(nt.Factor)){
-			if (match("t_not") && Factor())
+			if (match("t_not") && Factor(table))
 			{
 				System.out.println("Factor -> not Factor");
 				parseInfo += "Factor -> not Factor" + "\r\n";
@@ -1138,7 +1195,7 @@ public class Parser {
 		}
 		//| Sign Factor
 		else if (lookAhead.inRHS5(nt.Factor)){
-			if (Sign() && Factor())
+			if (Sign() && Factor(table))
 			{
 				System.out.println("Factor -> Sign Factor ");
 				parseInfo += "Factor -> Sign Factor " + "\r\n";
@@ -1161,7 +1218,15 @@ public class Parser {
 		System.out.println("Calling: Factor2 -> ( AParams ) ");
 		boolean success = skipErrors(nt.Factor2);
 		if (lookAhead.inRHS1(nt.Factor2)){
-			if (match("openpar") && AParams() && match("closepar")){
+			
+			lastIdnest.setStructure("function");
+			/*
+			if(parsedComplete){
+				table.search(lastIdnest);
+			}
+			 */
+			
+			if (match("openpar") && AParams(lastIdnest, table) && match("closepar")){
 				System.out.println("Factor2 -> ( AParams )");
 				parseInfo += "Factor2 -> ( AParams )" + "\r\n";
 			}
@@ -1171,6 +1236,15 @@ public class Parser {
 			}
 		}
 		else if (lookAhead.inFollow(nt.Factor2)){
+			
+			/*
+			if(parsedComplete){
+				table.search(lastIdnest);
+			}
+			
+			lastIdnest = null;
+			 */
+			
 			System.out.println("Factor2 -> epsilon");
 			parseInfo += "Factor2 -> epsilon" + "\r\n";
 		}
@@ -1182,7 +1256,7 @@ public class Parser {
 	}
 	
 	//31. IdnestList -> . id IndiceList IdnestList | IndiceList | epsilon
-	private boolean IdnestList(Table table){
+	/*private boolean IdnestList(Table table){
 		System.out.println("Calling: IdnestList -> . id IndiceList IdnestList | IndiceList | epsilon");
 		boolean success = skipErrors(nt.IdnestList);
 		if (lookAhead.inRHS1(nt.IdnestList)){
@@ -1214,31 +1288,106 @@ public class Parser {
 			System.out.println("In IdnestList(), did not pass:  infirst or infollow");
 		}
 		return success;
+	}*/
+	
+	//31. IdnestList -> . id IndiceList IdnestList | epsilon
+	private boolean IdnestList(Record call, Table table){
+		Table newScope = new Table();
+		System.out.println("Calling: IdnestList -> . id IndiceList IdnestList | epsilon");
+		boolean success = skipErrors(nt.IdnestList);
+		if (lookAhead.inRHS1(nt.IdnestList)){
+			
+			boolean b1 = match("dot");
+			if (parsedComplete && table.search(call)){
+				newScope = table.find(call).getLocal();
+			}
+			Record newCall = new Record();
+			boolean b2 = match("id");
+			newCall.setName(lookBehind.getLexeme());
+			boolean b3 = IndiceList(newCall, newScope);
+			lastIdnest = newCall;
+			boolean b4 = IdnestList(newCall, newScope);
+			
+			if (b1 && b2 && b3 && b4){
+				System.out.println("IdnestList -> . id IndiceList IdnestList ");
+				parseInfo += "IdnestList -> . id IndiceList IdnestList " + "\r\n";
+			}
+			else {
+				success = false;
+				System.out.println("In IdnestList(), did not pass: IdnestList -> . id IndiceList IdnestList ");
+			}
+		}
+		else if (lookAhead.inFollow(nt.IdnestList)){
+			System.out.println("IdnestList -> epsilon");
+			parseInfo += "IdnestList -> epsilon" + "\r\n";
+		}
+		else {
+			success = false;
+			System.out.println("In IdnestList(), did not pass:  infirst or infollow");
+		}
+		return success;
 	}
 	
-	//32. Variable -> id IdnestList
+	private boolean IdnestList2(Record call, Table table){
+		Table newScope = new Table();
+		System.out.println("Calling: IdnestList2 -> . id IndiceList IdnestList | epsilon");
+		boolean success = skipErrors(nt.IdnestList);
+		if (lookAhead.inRHS1(nt.IdnestList)){
+			
+			boolean b1 = match("dot");
+			if (parsedComplete && table.search(call)){
+				newScope = table.find(call).getLocal();
+			}
+			Record newCall = new Record();
+			boolean b2 = match("id");
+			newCall.setName(lookBehind.getLexeme());
+			boolean b3 = IndiceList(newCall, newScope);
+			if(parsedComplete){
+				newScope.search(newCall);
+			}
+			
+			lastIdnest = newCall;
+			boolean b4 = IdnestList2(newCall, newScope);
+			
+			if (b1 && b2 && b3 && b4){
+				System.out.println("IdnestList2 -> . id IndiceList IdnestList ");
+				parseInfo += "IdnestList2 -> . id IndiceList IdnestList " + "\r\n";
+			}
+			else {
+				success = false;
+				System.out.println("In IdnestList2(), did not pass: IdnestList2 -> . id IndiceList IdnestList ");
+			}
+		}
+		else if (lookAhead.inFollow(nt.IdnestList)){
+			System.out.println("IdnestList2 -> epsilon");
+			parseInfo += "IdnestList2 -> epsilon" + "\r\n";
+		}
+		else {
+			success = false;
+			System.out.println("In IdnestList2(), did not pass:  infirst or infollow");
+		}
+		return success;
+		
+	}
+	//32. Variable -> id IndiceList IdnestList2
 	private boolean Variable(Table table){
-		System.out.println("Calling: Variable -> id IdnestList");
+		System.out.println("Calling: Variable -> id IndiceList IdnestList2");
 		boolean success = skipErrors(nt.Variable);
-		/*
 		if (lookAhead.inRHS1(nt.Variable)){
-			if (match("id") && IdnestList()){
-				System.out.println("Variable -> id IdnestList");
-				parseInfo += "Variable -> id IdnestList" + "\r\n";
+			
+			Record call = new Record();
+			boolean b1 = match("id");
+			call.setName(lookBehind.getLexeme());
+			boolean b2 = IndiceList(call, table);
+			boolean b3 = IdnestList2(call, table);
+			
+			if (b1 && b2 && b3){
+				System.out.println("Variable -> id IndiceList IdnestList2");
+				parseInfo += "Variable -> id IndiceList IdnestList2" + "\r\n";
 			}
 			else {
 				success = false;
-				System.out.println("In Variable(), did not pass:  Variable -> id IdnestList");
-			}
-		}*/
-		if (lookAhead.inRHS1(nt.Variable)){
-			if (match("id") && IndiceList()){
-				System.out.println("Variable -> id IndiceList");
-				parseInfo += "Variable -> id IndiceList" + "\r\n";
-			}
-			else {
-				success = false;
-				System.out.println("In Variable(), did not pass:  Variable -> id IndiceList");
+				System.out.println("In Variable(), did not pass:  Variable -> id IndiceList IdnestList2");
 			}
 		}
 		else {
@@ -1249,11 +1398,14 @@ public class Parser {
 	}
 	
 	//33. IndiceList ->  Indice IndiceList | epsilon
-	private boolean IndiceList(Table table){
+	private boolean IndiceList(Record call, Table table){
 		System.out.println("Calling: IndiceList ->  Indice IndiceList | epsilon");
 		boolean success = skipErrors(nt.IndiceList);
 		if (lookAhead.inRHS1(nt.IndiceList)){
-			if (Indice() && IndiceList())
+			
+			call.setVarStructure("array");
+			
+			if (Indice(call, table) && IndiceList(call, table))
 			{
 				System.out.println("IndiceList ->  Indice IndiceList");
 				parseInfo += "IndiceList ->  Indice IndiceList " + "\r\n";
@@ -1276,12 +1428,13 @@ public class Parser {
 	}
 	
 	//34. Indice -> [ ArithExpr ] 
-	private boolean Indice(Table table){
+	private boolean Indice(Record call, Table table){
 		System.out.println("Calling: Indice -> [ ArithExpr ] Indice | epsilon");
 		boolean success = skipErrors(nt.Indice);
 		if (lookAhead.inRHS1(nt.Indice)){
-			if (match("opensq") && ArithExpr() && match("closesq"))
+			if (match("opensq") && ArithExpr(table) && match("closesq"))
 			{
+				call.getDimension().add(0);
 				System.out.println("Indice -> [ ArithExpr ]");
 				parseInfo += "Indice -> [ ArithExpr ]" + "\r\n";
 			}
@@ -1298,11 +1451,17 @@ public class Parser {
 	}
 	
 	//35. ArraySize -> [ INT ] 
-	private boolean ArraySize(Table table){
+	private boolean ArraySize(Record record){
 		System.out.println("Calling: ArraySize -> [ INT ] ");
 		boolean success = skipErrors(nt.ArraySize);
 		if (lookAhead.inRHS1(nt.ArraySize)){
-			if (match("opensq") && match("INT") && match("closesq"))
+			
+			boolean b1 = match("opensq");
+			boolean b2 = match("INT");
+			record.getDimension().add(Integer.parseInt(lookBehind.getLexeme()));
+			boolean b3 = match("closesq");
+			
+			if (b1 && b2 && b3)
 			{
 				System.out.println("ArraySize -> [ INT ] ");
 				parseInfo += "ArraySize -> [ INT ] " + "\r\n";
@@ -1320,11 +1479,23 @@ public class Parser {
 	}
 	
 	//36. FParams -> Type id ArraySizeList FParamsTailList | epsilon
-	private boolean FParams(){
+	private boolean FParams(Record record, Table table){
+		
+		Record newRecord = new Record();
+		newRecord.setVarKind("parameter");
+		
 		System.out.println("Calling: FParams -> Type id ArraySizeList FParamsTailList | epsilon");
 		boolean success = skipErrors(nt.FParams);
 		if (lookAhead.inRHS1(nt.FParams)){
-			if (Type() && match("id") && ArraySizeList() && FParamsTailList()){
+			
+			boolean b1 = Type(newRecord);
+			boolean b2 = match("id");
+			newRecord.setName(lookBehind.getLexeme());
+			record.getParams().add(newRecord.getType());
+			boolean b3 = ArraySizeList(newRecord);
+			boolean b4 = FParamsTailList(record, table);
+			
+			if (b1 && b2 && b3 && b4){
 				System.out.println("FParams -> Type id ArraySizeList FParamsTailList ");
 				parseInfo += "FParams -> Type id ArraySizeList FParamsTailList" + "\r\n";
 			}
@@ -1345,11 +1516,11 @@ public class Parser {
 	}
 
 	//37. FParamsTailList -> FParamsTail FParamsTailList | epsilon
-	private boolean FParamsTailList(Table table){
+	private boolean FParamsTailList(Record record, Table table){
 		System.out.println("Calling: FParamsTailList ->  FParamsTail FParamsTailList | epsilon");
 		boolean success = skipErrors(nt.FParamsTailList);
 		if (lookAhead.inRHS1(nt.FParamsTailList)){
-			if (FParamsTail() && FParamsTailList())
+			if (FParamsTail(record, table) && FParamsTailList(record, table))
 			{
 				System.out.println("FParamsTailList ->  FParamsTail FParamsTailList");
 				parseInfo += "FParamsTailList ->  FParamsTail FParamsTailList " + "\r\n";
@@ -1372,11 +1543,16 @@ public class Parser {
 	}
 	
 	//38. AParams -> Expr AParamsTailList | epsilon
-	private boolean AParams(){
+	private boolean AParams(Record function, Table table){
 		System.out.println("Calling: AParams -> Expr AParamsTailList | epsilon");
 		boolean success = skipErrors(nt.AParams);
 		if (lookAhead.inRHS1(nt.AParams)){
-			if (Expr() && AParamsTailList()){
+			
+			boolean b1 = Expr(table);
+			function.getParams().add("");
+			boolean b2 = AParamsTailList(function, table);
+			
+			if (b1 && b2){
 				System.out.println("AParams -> Expr AParamsTailList");
 				parseInfo += "AParams -> Expr AParamsTailList" + "\r\n";
 			}
@@ -1397,11 +1573,16 @@ public class Parser {
 	}
 	
 	//39. AParamsTailList -> AParamsTail AParamsTailList | epsilon
-	private boolean AParamsTailList(Table table){
+	private boolean AParamsTailList(Record function, Table table){
 		System.out.println("Calling: AParamsTailList ->  AParamsTail AParamsTailList | epsilon");
 		boolean success = skipErrors(nt.AParamsTailList);
 		if (lookAhead.inRHS1(nt.AParamsTailList)){
-			if (AParamsTail() && AParamsTailList())
+			
+			boolean b1 = AParamsTail(table);
+			function.getParams().add("");
+			boolean b2 = AParamsTailList(function, table);
+			
+			if (b1 && b2)
 			{
 				System.out.println("AParamsTailList -> AParamsTail AParamsTailList");
 				parseInfo += "AParamsTailList -> AParamsTail AParamsTailList " + "\r\n";
@@ -1424,11 +1605,23 @@ public class Parser {
 	}
 	
 	//40. FParamsTail -> , Type id ArraySizeList
-	private boolean FParamsTail(){
+	private boolean FParamsTail(Record record, Table table){
+		
+		Record newRecord = new Record();
+		newRecord.setVarKind("parameter");
+		
 		System.out.println("Calling: FParamsTail -> , Type id ArraySizeList");
 		boolean success = skipErrors(nt.FParamsTail);
 		if (lookAhead.inRHS1(nt.FParamsTail)){
-			if (match("comma") && Type() && match("id") && ArraySizeList())
+			
+			boolean b1 = match("comma");
+			boolean b2 = Type(newRecord);
+			boolean b3 = match("id");
+			newRecord.setName(lookBehind.getLexeme());
+			record.getParams().add(newRecord.getType());
+			boolean b4 = ArraySizeList(newRecord);
+			
+			if (b1 && b2 && b3 && b4)
 			{
 				System.out.println("FParamsTail -> , Type id ArraySizeList");
 				parseInfo += "FParamsTail -> , Type id ArraySizeList" + "\r\n";
@@ -1452,7 +1645,7 @@ public class Parser {
 		System.out.println("Calling: AParamsTail -> , Expr ");
 		boolean success = skipErrors(nt.AParamsTail);
 		if (lookAhead.inRHS1(nt.AParamsTail)){
-			if (match("comma") && Expr())
+			if (match("comma") && Expr(table))
 			{
 				System.out.println("AParamsTail -> , Expr");
 				parseInfo += "AParamsTail -> , Expr" + "\r\n";
@@ -1470,7 +1663,7 @@ public class Parser {
 	}
 	
 	//42. RelOp -> == | <> | < | > | <= | >=
-	private boolean RelOp(Table table){
+	private boolean RelOp(){
 		System.out.println("Calling: RelOp -> == | <> | < | > | <= | >=");
 		boolean success = skipErrors(nt.RelOp);
 		if (lookAhead.inRHS1(nt.RelOp)){
@@ -1547,7 +1740,7 @@ public class Parser {
 	}
 	
 	//43. AddOp -> + | - | or
-	private boolean AddOp(Table table){
+	private boolean AddOp(){
 		System.out.println("Calling: AddOp -> + | - | or");
 		boolean success = skipErrors(nt.AddOp);
 		if (lookAhead.inRHS1(nt.AddOp)){
@@ -1591,7 +1784,7 @@ public class Parser {
 	}
 
 	//44. MultOp -> * | / | and
-	private boolean MultOp(Table table){
+	private boolean MultOp(){
 		System.out.println("Calling: MultOp -> * | / | and");
 		boolean success = skipErrors(nt.MultOp);
 		if (lookAhead.inRHS1(nt.MultOp)){

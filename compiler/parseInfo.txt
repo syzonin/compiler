@@ -40,9 +40,9 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -60,9 +60,10 @@ ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -74,10 +75,12 @@ Term -> Factor Term2
 ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Indice -> epsilon
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 AddOp -> -
@@ -89,9 +92,10 @@ ArithExpr -> Term ArithExpr2
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -99,17 +103,18 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 RelOp -> >
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -117,10 +122,12 @@ ArithExpr -> Term ArithExpr2
 Expr2 -> RelOp ArithExpr
 Expr -> ArithExpr Expr2
 Indice -> epsilon
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -128,9 +135,9 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -150,9 +157,10 @@ StatementList -> Statement StatementList
 StatBlock -> { StatementList }
 Statement -> for ( Type id = Expr ; ArithExpr RelOp ArithExpr ; Variable = Expr ) StatBlock ;
 FuncBodyMember -> Statement2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -190,9 +198,9 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -210,9 +218,10 @@ ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -224,10 +233,12 @@ Term -> Factor Term2
 ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Indice -> epsilon
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -244,9 +255,10 @@ ArithExpr -> Term ArithExpr2
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -254,17 +266,18 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 RelOp -> <
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -272,10 +285,12 @@ ArithExpr -> Term ArithExpr2
 Expr2 -> RelOp ArithExpr
 Expr -> ArithExpr Expr2
 Indice -> epsilon
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -283,9 +298,9 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -305,9 +320,10 @@ StatementList -> Statement StatementList
 StatBlock -> { StatementList }
 Statement -> for ( Type id = Expr ; ArithExpr RelOp ArithExpr ; Variable = Expr ) StatBlock ;
 FuncBodyMember -> Statement2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -365,9 +381,10 @@ ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -379,10 +396,12 @@ Term -> Factor Term2
 ArithExpr2 -> epsilon
 ArithExpr -> Term ArithExpr2
 Indice -> epsilon
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 AddOp -> +
@@ -394,9 +413,10 @@ ArithExpr -> Term ArithExpr2
 ArithExpr -> Term ArithExpr2
 Expr2 -> epsilon
 Expr -> ArithExpr Expr2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -404,12 +424,14 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
 Statement -> get ( Variable ) ;
 Statement -> Statement2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -417,10 +439,12 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -428,14 +452,15 @@ ArithExpr -> Term ArithExpr2
 Indice -> [ ArithExpr ]
 Indice -> epsilon
 IndiceList ->  Indice IndiceList 
-IdnestList -> IndiceList 
+IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 MultOp -> *
+Indice -> epsilon
 IdnestList -> epsilon
 AParams -> epsilon
 Factor2 -> ( AParams )
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term2 -> MultOp Factor Term2 
 Term -> Factor Term2
@@ -457,11 +482,13 @@ Statement -> for ( Type id = Expr ; ArithExpr RelOp ArithExpr ; Variable = Expr 
 FuncBodyMember -> Statement2
 Indice -> epsilon
 Indice -> epsilon
+Indice -> epsilon
 IdnestList -> epsilon
 IdnestList -> . id IndiceList IdnestList 
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -471,7 +498,7 @@ Expr -> ArithExpr Expr2
 AParamsTail -> epsilon
 AParams -> Expr AParamsTailList
 Factor2 -> ( AParams )
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -483,11 +510,13 @@ IndiceList FuncBodyMember3
 FuncBodyMember -> id FuncBodyMember2
 Indice -> epsilon
 Indice -> epsilon
+Indice -> epsilon
 IdnestList -> epsilon
 IdnestList -> . id IndiceList IdnestList 
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -497,7 +526,7 @@ Expr -> ArithExpr Expr2
 AParamsTail -> epsilon
 AParams -> Expr AParamsTailList
 Factor2 -> ( AParams )
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -558,7 +587,8 @@ IndiceList ->  Indice IndiceList
 IndiceList ->  Indice IndiceList 
 IndiceList ->  Indice IndiceList 
 IndiceList ->  Indice IndiceList 
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
 Factor -> num
 Term2 -> epsilon
 Term -> Factor Term2
@@ -648,7 +678,8 @@ IndiceList ->  Indice IndiceList
 IndiceList ->  Indice IndiceList 
 IndiceList ->  Indice IndiceList 
 IndiceList ->  Indice IndiceList 
-Variable -> id IndiceList
+IdnestList2 -> epsilon
+Variable -> id IndiceList IdnestList2
 Factor -> num
 Term2 -> epsilon
 Term -> Factor Term2
@@ -659,9 +690,10 @@ Expr -> ArithExpr Expr2
 FuncBodyMember3 -> . Variable = Expr ;
 IndiceList FuncBodyMember3
 FuncBodyMember -> id FuncBodyMember2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -670,9 +702,10 @@ Expr2 -> epsilon
 Expr -> ArithExpr Expr2
 Statement -> put ( Expr ) ;
 FuncBodyMember -> Statement2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
@@ -768,9 +801,10 @@ Expr -> ArithExpr Expr2
 FuncBodyMember3 -> = Expr ;
 IndiceList FuncBodyMember3
 FuncBodyMember -> id FuncBodyMember2
+Indice -> epsilon
 IdnestList -> epsilon
 Factor2 -> epsilon
-Factor -> id IdnestList Factor2
+Factor -> id IndiceList IdnestList Factor2
 Term2 -> epsilon
 Term -> Factor Term2
 ArithExpr2 -> epsilon
