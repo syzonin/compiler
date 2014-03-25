@@ -7,8 +7,9 @@ class Utility
  int findMax(int array[100]) 
  { 
  	int maxValue; 
+ 	int idx; 
  	maxValue = array[100]; 
- 	for(int idx = 99; idx > 0; idx = idx - 1 ) 
+ 	for( idx = 99; idx > 0; idx = idx - 1 ) 
  	{ 
  		if(array[idx] > maxValue) then { 
  			maxValue = array[idx]; 
@@ -20,8 +21,9 @@ class Utility
  int findMin(int array[100]) 
  { 
  	int minValue; 
+ 	int idx; 
  	minValue = array[100]; 
- 	for(int idx = 1; idx <= 99; idx = ( idx ) + 1) 
+ 	for( idx = 1; idx <= 99; idx = ( idx ) + 1) 
  	{ 
  		if(array[idx] < maxValue) then { 
  			maxValue = array[idx]; 

@@ -146,7 +146,6 @@ public class Table {
 			//For Functions
 			if (record.getStructure().equals("function")) {
 				errors += "Error: Function " + record.getName() + "(";
-				System.err.print("Function " + record.getName() + "(");
 				for (int i=0; i<record.getParams().size(); i++) {
 					if(i == record.getParams().size() - 1){
 						errors += record.getParams().get(i);
@@ -221,7 +220,6 @@ public class Table {
 				return parentTable.search(record);
 			}
 			errors += "Error: undefined function " + record.getName() + "(";
-			System.err.print("Error: Function " + record.getName() + "(");
 			
 			for (int i=0; i<record.getParams().size(); i++) {
 				if(i == record.getParams().size() - 1){
@@ -274,7 +272,7 @@ public class Table {
 		return false;
 	}
 	
-	//retrieve record
+	//Checks if record is defined in scope
 	public Record find(Record record) {
 		
 		for (int i=0; i<records.size(); i++) {

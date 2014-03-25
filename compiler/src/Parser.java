@@ -17,8 +17,7 @@ public class Parser {
 	public Parser(Lexer l){
 		
 		//call parser, returns true or false
-		
-		//INSERT PARSER CODE HERE 
+	
 		while (!l.fileComplete()){
 			Token t = l.getNextToken();
 			

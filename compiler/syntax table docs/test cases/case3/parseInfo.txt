@@ -29,6 +29,8 @@ FParamsTail -> epsilon
 FParams -> Type id ArraySizeList FParamsTailList
 ArraySize -> epsilon
 FuncBodyMember -> int id ArraySizeList ;
+ArraySize -> epsilon
+FuncBodyMember -> int id ArraySizeList ;
 Indice -> epsilon
 Factor -> num
 Term2 -> epsilon
@@ -172,6 +174,7 @@ FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
+FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBody -> { FuncBodyMemberList }
 ClassMemberDecl2 -> ( FParams ) FuncBody ;
 ClassMemberDecl -> Type id ClassMemberDecl2
@@ -182,6 +185,8 @@ ArraySize -> epsilon
 ArraySizeList ->  ArraySize ArraySizeList 
 FParamsTail -> epsilon
 FParams -> Type id ArraySizeList FParamsTailList
+ArraySize -> epsilon
+FuncBodyMember -> int id ArraySizeList ;
 ArraySize -> epsilon
 FuncBodyMember -> int id ArraySizeList ;
 Indice -> epsilon
@@ -328,6 +333,7 @@ Expr -> ArithExpr Expr2
 Statement -> return ( Expr ) ;
 FuncBodyMember -> Statement2
 FuncBodyMemberList -> epsilon
+FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
@@ -773,7 +779,58 @@ FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
 FuncBody -> { FuncBodyMemberList }
 FuncDef -> FuncHead FuncBody ;
+Type -> float
+FParams -> epsilon
+FuncHead -> Type id ( FParams )
+ArraySize -> epsilon
+FuncBodyMember -> float id ArraySizeList ;
+Indice -> epsilon
+Factor -> num
+MultOp -> *
+Factor -> num
+Term2 -> epsilon
+Term -> Factor Term2
+AddOp -> +
+Factor -> num
+MultOp -> /
+Factor -> num
+Term2 -> epsilon
+Term2 -> MultOp Factor Term2 
+Term -> Factor Term2
+ArithExpr2 -> epsilon
+ArithExpr -> Term ArithExpr2
+ArithExpr -> Term ArithExpr2
+Factor -> ( ArithExpr )
+Term2 -> epsilon
+Term2 -> MultOp Factor Term2 
+Term -> Factor Term2
+ArithExpr2 -> epsilon
+ArithExpr -> Term ArithExpr2
+Expr2 -> epsilon
+Expr -> ArithExpr Expr2
+FuncBodyMember3 -> = Expr ;
+IndiceList FuncBodyMember3
+FuncBodyMember -> id FuncBodyMember2
+Indice -> epsilon
+IdnestList -> epsilon
+Factor2 -> epsilon
+Factor -> id IndiceList IdnestList Factor2
+Term2 -> epsilon
+Term -> Factor Term2
+ArithExpr2 -> epsilon
+ArithExpr -> Term ArithExpr2
+Expr2 -> epsilon
+Expr -> ArithExpr Expr2
+Statement -> return ( Expr ) ;
+FuncBodyMember -> Statement2
+FuncBodyMemberList -> epsilon
+FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
+FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
+FuncBodyMemberList -> FuncBodyMember FuncBodyMemberList
+FuncBody -> { FuncBodyMemberList }
+FuncDef -> FuncHead FuncBody ;
 FuncDefList -> epsilon
+FuncDefList -> FuncDef FuncDefList
 FuncDefList -> FuncDef FuncDefList
 ProgBody -> program FuncBody ; FuncDefList
 Prog -> ClassDeclList ProgBody

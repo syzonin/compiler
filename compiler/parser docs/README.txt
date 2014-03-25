@@ -1,1 +1,0 @@
-To run, please change the file locations of test.txt, profprovided.txt, tokens.txt, parserInfo.txt, and errorMessages.txt.

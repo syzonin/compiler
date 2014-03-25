@@ -1,0 +1,3 @@
+Error: Variable idx already declared.
+Error: Variable idx already declared.
+Error: Function randomize() already declared.

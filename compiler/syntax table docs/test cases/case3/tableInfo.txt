@@ -1,0 +1,33 @@
+Table: Global Scope
+{Record name: Utility, structure: class, type: class, number of parameters: 0, parameters: false, local table: true, address: 0}
+{Record name: randomize, structure: function, type: float, number of parameters: 0, parameters: false, local table: true, address: 101}
+{Record name: program, structure: function, type: function, number of parameters: 0, parameters: false, local table: true, address: 55}
+
+Table: Class Utility
+{Record name: var1, structure: variable, type: int, variable kind: normal, variable structure: array, dimension: [4, 5, 7, 8, 9, 1, 0], address: 1}
+{Record name: var2, structure: variable, type: float, variable kind: normal, variable structure: simple, dimension: null, address: 3}
+{Record name: findMax, structure: function, type: int, number of parameters: 1, parameters: true, local table: true, address: 5}
+{Record name: findMin, structure: function, type: int, number of parameters: 1, parameters: true, local table: true, address: 30}
+
+Table: Function findMax
+{Record name: array, structure: variable, type: int, variable kind: parameter, variable structure: array, dimension: [100], address: 6}
+{Record name: maxValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 8}
+{Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 10}
+
+Table: Function findMin
+{Record name: array, structure: variable, type: int, variable kind: parameter, variable structure: array, dimension: [100], address: 31}
+{Record name: minValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 33}
+{Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 35}
+
+Table: Function randomize
+{Record name: value, structure: variable, type: float, variable kind: normal, variable structure: simple, dimension: null, address: 103}
+
+Table: Function program
+{Record name: sample, structure: variable, type: int, variable kind: normal, variable structure: array, dimension: [100], address: 56}
+{Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 58}
+{Record name: maxValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 60}
+{Record name: minValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 62}
+{Record name: utility, structure: variable, type: Utility, variable kind: normal, variable structure: simple, dimension: null, address: 64}
+{Record name: arrayUtility, structure: variable, type: Utility, variable kind: normal, variable structure: array, dimension: [2, 3, 6, 7], address: 65}
+{Record name: t, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 67}
+
