@@ -1,79 +1,39 @@
-/*import java.util.ArrayList;
-
-
-public class Record {
-	
-	private String name;
-	private String type;
-	private String varKind;
-	private String structure;
-	private int numParams;
-	private ArrayList<String> paramTypes;
-	private ArrayList<Integer> dimension;
-	private float address;
-	private Table local;
-	
-	public Record(){
-		varKind = "normal";
-		
-	}
-
-} */
-
 import java.util.ArrayList;
 
 public class Record {
 
-	private String name, type, varKind, structure, varStructure;
+	private String name; 
+	private String type; 
+	private String varKind; 
+	private String structure; 
+	private String varStructure;
 	private Table local;
+	private Table classLocal;
 	private ArrayList<Integer> dimension = new ArrayList<Integer>();
 	private ArrayList<String> params = new ArrayList<String>();
+	private int address;
+	private static int increment = 0;
 	
-	private Table classLocal;
-	
-	private static long unique = 0;
-	private long address;
 	
 	public Record() {
-		
-		//address = unique++;
+		address = increment++;
 		varKind = "normal";
 		structure = "variable";
 		varStructure = "simple";
 		local = new Table();
 		classLocal = new Table();
-		
 	}
 
-	/*
-	public Record(Record record) {
-		
-		name = record.getName();
-		type = record.getType();
-		varKind = record.getVarKind();
-		varStructure = record.getVarStructure();
-		local = new Table(record.getLocal());
-		dimension = record.getDimension();
-		params = record.getParams();
-		classLocal = record.getClassLocal();
-		address = record.getAddress();
-		
-	}
-	*/
-	public Table getClassLocal() {
-		return classLocal;
-	}
-
-	public void setClassLocal(Table classLocal) {
-		this.classLocal = classLocal;
-	}
-
-	public String getVarStructure() {
-		return varStructure;
-	}
-
-	public void setVarStructure(String varStructure) {
-		this.varStructure = varStructure;
+	public Record(Record r) {
+		name = r.getName();
+		type = r.getType();
+		varKind = r.getVarKind();
+		varStructure = r.getVarStructure();
+		local = new Table(r.getLocal());
+		dimension = r.getDimension();
+		params = r.getParams();
+		classLocal = r.getClassLocal();
+		address = r.getAddress();
 	}
 
 	public String getName() {
@@ -83,9 +43,13 @@ public class Record {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	public String getType() {
 		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	public String getVarKind() {
@@ -95,17 +59,29 @@ public class Record {
 	public void setVarKind(String varKind) {
 		this.varKind = varKind;
 	}
-
-	public void setType(String type) {
-		this.type = type;
+	
+	public String getVarStructure() {
+		return varStructure;
 	}
 
+	public void setVarStructure(String varStructure) {
+		this.varStructure = varStructure;
+	}
+	
 	public Table getLocal() {
 		return local;
 	}
 
 	public void setLocal(Table local) {
 		this.local = local;
+	}
+	
+	public Table getClassLocal() {
+		return classLocal;
+	}
+
+	public void setClassLocal(Table classLocal) {
+		this.classLocal = classLocal;
 	}
 
 	public String getStructure() {
@@ -132,85 +108,92 @@ public class Record {
 		this.params = params;
 	}
 	
-	public long getAddress() {
+	public int getAddress() {
 		return address;
 	}
 
-	public void setAddress(long address) {
+	public void setAddress(int address) {
 		this.address = address;
 	}
-
-	public boolean equalsR(Record record, boolean call) {
-		
-		if (structure.equals(record.structure) && name.equals(record.name)) {
-		
-			if (structure.equals("class"))
-				return true;
-			
-			else if(call && structure.equals("function") && params.size() == record.params.size())
-				return true;
-			
-			else if (!call && structure.equals("function") && this.hasSameParams(record))
-				return true;
-			
-			else if (structure.equals("variable"))
-				return true;
-			
-			else
-				return false;
-			
-		}
-		
-		else
-			return false;
-		
-	}
 	
-	public boolean hasSameParams(Record record) {
-		
-		for (int i=0; i < params.size(); i++) {
-			
-			if (!params.get(i).equals(record.params.get(i)))
-					return false;
-			
-		}
-		
-		return true;
-		
-	}
-	
-	public boolean isValidType(ArrayList<String> validTypes) {
-		
-		for (int i=0; i < validTypes.size(); i++) {
-			
-			if (type.equals(validTypes.get(i)))
-				return true;
-			
-		}
-		
-		return false;
-		
-	}
-
-	@Override
-	public String toString() {
-		return "Record [name=" + name + ", type=" + type + ", varKind="
-				+ varKind + ", structure=" + structure + ", varStructure="
-				+ varStructure + ", local=" + local + ", dimension="
-				+ dimension + ", params=" + params + ", address=" + address
-				+ "]";
-	}
-	
-	public void giveAddress() {
-		
-		address = unique++;
-		
+	//increments address
+	public void incrementAddress() {
+		address = increment++;
 		for(int i=0; i<classLocal.getRecords().size(); i++) {
-			
-			classLocal.getRecords().get(i).address = unique++;
-			
+			classLocal.getRecords().get(i).address = increment++;
 		}
+	}
+
+	//checks if parameter equals current record
+	public boolean equalsRecord(Record r, boolean call) {
 		
+		boolean equals = false;
+		if (name.equals(r.name) && structure.equals(r.structure)) {
+			if (structure.equals("class")){
+				equals = true;
+			}
+			else if(call && structure.equals("function") && params.size() == r.params.size()){
+				equals = true;
+			}
+			else if (!call && structure.equals("function") && this.paramIsRepeated(r)){
+				equals = true;
+			}
+			else if (structure.equals("variable")){
+				equals = true;
+			}
+		}
+		return equals;
+		
+	}
+	
+	//Checks if parameter already exists
+	public boolean paramIsRepeated(Record r) {
+		boolean isRepeated = true;
+		for (int i=0; i < params.size(); i++) {
+			if (!params.get(i).equals(r.params.get(i))){
+				isRepeated = false;
+			}
+		}
+		return isRepeated;
+	}
+	
+	//Checks if type is valid within scope
+	public boolean isValidType(ArrayList<String> validTypes) {
+		boolean isValid = false;;
+		for (int i=0; i < validTypes.size(); i++) {
+			if (type.equals(validTypes.get(i))){
+				isValid = true;
+			}
+		}
+		return isValid;
+	}
+	
+	//Helper method for toString()
+	private ArrayList<Integer> printDimension(){
+		if (dimension.isEmpty()){
+			return null;
+		}
+		else {
+			return dimension;
+		}
+	}
+	
+	//Returns records as String
+	public String toString() {
+		String s;
+		//toString for Variables
+		if (!structure.equals("class") && !structure.equals("function") ){
+			s = "{Record name: " + name + ", structure: " + structure + ", type: " + type 
+				+  ", variable kind: " + varKind + ", variable structure: " + varStructure 
+				+  ", dimension: " + printDimension() + ", address: " + address + "}";
+		}
+		//toString for Functions and Classes
+		else {
+			s = "{Record name: " + name +  ", structure: " + structure + ", type: " + type
+				+ ", number of parameters: " + params.size() + ", parameters: " + !params.isEmpty() 
+				+ ", local table: " + !local.getRecords().isEmpty() + ", address: " + address + "}";
+		}
+		return s;
 	}
 	
 }

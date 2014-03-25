@@ -1,497 +1,321 @@
 
-/* MOON CODE INCOMPLET
-import java.io.PrintWriter;
-
-*/
-
 import java.util.ArrayList;
 
 public class Table {
 
-	private ArrayList<Record> records, definitionBuffer;
+	private ArrayList<Record> records;
+	private ArrayList<Record> buffer;
 	private ArrayList<String> validTypes;
 	private Table parentTable;
+	private static String errors = "";
+	public static boolean hasErrors = false;
+	private String tableInfo = "";
 	
-	/* MOON CODE INCOMPLETE
-	
-	private ArrayList<String> moonCalls = new ArrayList<String>();
-	
-	private int parameterNum = 1;
-	
-	*/
-	
+	//Empty Constructor
 	public Table() {
-		
 		records = new ArrayList<Record>();
-		definitionBuffer = new ArrayList<Record>();
+		buffer = new ArrayList<Record>();
 		validTypes = new ArrayList<String>();
-		validTypes.add("integer");
-		validTypes.add("real");
-		
+		validTypes.add("int");
+		validTypes.add("float");
 	}
 	
-	public Table(Table parentTable) {
-		
+	//Constructor with Table inheriting parent Table
+	public Table(Table parent) {
 		records = new ArrayList<Record>();
-		definitionBuffer = new ArrayList<Record>();
-		validTypes = parentTable.validTypes;
-		this.parentTable = parentTable;
-	
-		
+		buffer = new ArrayList<Record>();
+		validTypes = parent.validTypes;
+		parentTable = parent;
 	}
 
+	public String getSymbolTable(){
+		ArrayList<Record> classArray = new ArrayList<Record>();
+		ArrayList<Record> functionArray = new ArrayList<Record>();
+		
+		tableInfo += "Table: Global Scope" + "\r\n";
+		for (int i = 0; i < records.size(); i++){
+			tableInfo += records.get(i) + "\r\n";
+		}
+		tableInfo += "\r\n";
+		
+		for (int i = 0; i < records.size(); i++){
+			if (records.get(i).getStructure().equals("function")){
+				functionArray.add(records.get(i));
+			}
+			else if (records.get(i).getStructure().equals("class")){
+				classArray.add(records.get(i));
+				ArrayList<Record> temp = records.get(i).getLocal().getRecords();
+				for(int j = 0; j < temp.size(); j++){
+					if (temp.get(j).getStructure().equals("function")){
+						functionArray.add(temp.get(j));
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < classArray.size(); i++){
+			tableInfo +="Table: Class "+ classArray.get(i).getName() + "\r\n";
+			ArrayList<Record> temp = classArray.get(i).getLocal().getRecords();
+			for(int j = 0; j < temp.size(); j++){
+				tableInfo += temp.get(j) + "\r\n";
+			}
+			tableInfo += "\r\n";
+		}
+		
+		for (int i = 0; i < functionArray.size(); i++){
+			tableInfo += "Table: Function "+ functionArray.get(i).getName() + "\r\n";
+			ArrayList<Record> temp = functionArray.get(i).getLocal().getRecords();
+			for(int j = 0; j < temp.size(); j++){
+					tableInfo += temp.get(j) + "\r\n";
+			}
+			tableInfo += "\r\n";
+		}
+		
+		return tableInfo;
+		
+	}
+	public static String getTableErrors(){
+		return errors;
+	}
 	public ArrayList<String> getValidTypes() {
 		return validTypes;
 	}
 
-	public void setValidTypes(ArrayList<String> validTypes) {
-		this.validTypes = validTypes;
+	public void setValidTypes(ArrayList<String> v) {
+		validTypes = v;
 	}
 
-	public ArrayList<Record> getDefinitionBuffer() {
-		return definitionBuffer;
+	public ArrayList<Record> getbuffer() {
+		return buffer;
 	}
 
-	public void setDefinitionBuffer(ArrayList<Record> definitionBuffer) {
-		this.definitionBuffer = definitionBuffer;
+	public void setbuffer(ArrayList<Record> b) {
+		buffer = b;
 	}
 
 	public ArrayList<Record> getRecords() {
 		return records;
 	}
 
-	public void setRecords(ArrayList<Record> records) {
-		this.records = records;
+	public void setRecords(ArrayList<Record> r) {
+		records = r;
 	}
 
 	public Table getParentTable() {
 		return parentTable;
 	}
 
-	public void setParentTable(Table parentTable) {
-		this.parentTable = parentTable;
+	public void setParentTable(Table p) {
+		parentTable = p;
 	}
 	
+	//Insert record
 	public void insert(Record record, boolean parsedComplete, boolean flush) {
 		
 		if(parsedComplete)
 			return;
 		
+		//add program record
 		if (record.getName().equals("program")) {
-			
 			records.add(record);
 			return;
-			
 		}
-		
-		if (!record.getStructure().equals("class") && !record.isValidType(validTypes))
-			definitionBuffer.add(record);
-		
-		else if (!alreadyDefined(record)) {
-			
+		//add class to buffer
+		if (!record.getStructure().equals("class") && !record.isValidType(validTypes)){
+			buffer.add(record);
+		}
+		//add record to records
+		else if (!alreadyDeclared(record)) {
 			records.add(record);
-			
-			if (record.getStructure().equals("variable")) {
-				
-				record.setClassLocal(getScope(record.getType()).getLocal());
-				
+			if (record.getStructure().equals("variable")){
+				record.setClassLocal(getScope(record.getType()).getLocal());			
 			}
-			
-			if (record.getStructure().equals("function")) {
-				
+			else if (record.getStructure().equals("function")){
 				record.setClassLocal(getScope(record.getName()).getLocal());
-				
-				//Parser.pw2.println("Printing: Function " + record.getName());
-				//Parser.pw2.println(record.getLocal().toString());
-				
 				if (flush) {
-					record.setLocal(null);						//Destroy function table
+					//destroy function table
+					record.setLocal(null);
 				}
-				
 			}
-			
-			else if (record.getStructure().equals("class"))
+			else if (record.getStructure().equals("class")){
 				validTypes.add(record.getName());
-			
+			}
 		}
-			
+		//Error: Already declared
 		else {
-			
+			//For Functions
 			if (record.getStructure().equals("function")) {
-			
-				System.err.print("Multiple declarations of " + record.getStructure() + " " + record.getName());
-				System.err.print("(");
-				
+				errors += "Error: Function " + record.getName() + "(";
+				System.err.print("Function " + record.getName() + "(");
 				for (int i=0; i<record.getParams().size(); i++) {
-					
-					if(i == record.getParams().size() - 1)
-						System.err.print(record.getParams().get(i));
-					else
-						System.err.print(record.getParams().get(i) + ", ");
-					
+					if(i == record.getParams().size() - 1){
+						errors += record.getParams().get(i);
+					}
+					else{
+						errors += record.getParams().get(i) + ", ";
+					}
 				}
-				
-				System.err.println(")");
-				//Parser.tableError = true;
-				
+				errors += ") already declared." + "\r\n";
 			}
-			
-			else
-				System.err.println("Multiple declarations of " + record.getStructure() + " " + record.getName());
-				//Parser.tableError = true;
-		}
-		
-	}
-	
-	public boolean alreadyDefined(Record record) {
-		
-		for (int i=0; i<records.size(); i++) {
-			
-			if(record.equalsR(records.get(i), false))
-				return true;
-			
-		}
-		
-		return false;
-		
-	}
-	
-	public void flushDefinitionBuffer(boolean flush) {
-		
-		for (int i=0; i<definitionBuffer.size(); i++) {
-			
-			if (definitionBuffer.get(i).getLocal() != null)
-				definitionBuffer.get(i).getLocal().flushDefinitionBuffer(flush);
-			
-			if (definitionBuffer.get(i).isValidType(validTypes))
-				insert(definitionBuffer.get(i), false, flush);
-			
+			//For Classes
+			else if(record.getStructure().equals("class")){
+				errors += "Error: Class " + record.getName() + " already declared." + "\r\n";
+			}
+			//For Variables
 			else {
-				System.err.println("Error: Invalid type " + definitionBuffer.get(i).getType() + " for " + definitionBuffer.get(i).getStructure()
-						+ " " + definitionBuffer.get(i).getName());
-				//Parser.tableError = true;
+				errors += "Error: Variable " + record.getName() + " already declared." + "\r\n";
 			}
-		}
-		
-		for (int i=0; i<records.size(); i++) {
-	
-			if (records.get(i).getLocal() != null)
-				records.get(i).getLocal().flushDefinitionBuffer(flush);
-			
+			hasErrors = true;
 		}
 		
 	}
 	
+	//Helper method: checks if record is already declared
+	private boolean alreadyDeclared(Record record) {
+		
+		boolean declared = false;
+		for (int i=0; i<records.size(); i++) {
+			if(record.equalsRecord(records.get(i), false)){
+				declared = true;
+			}
+		}
+		return declared;
+	}
+	
+	//Flush buffer
+	public void flushBuffer(boolean flush) {
+		
+		for (int i=0; i<buffer.size(); i++) {
+			if (buffer.get(i).getLocal() != null){
+				buffer.get(i).getLocal().flushBuffer(flush);
+			}
+			if (buffer.get(i).isValidType(validTypes)){
+				insert(buffer.get(i), false, flush);
+			}
+			else {
+				errors += "Error: Invalid type " + buffer.get(i).getType() + " for " + buffer.get(i).getStructure()
+						+ " " + buffer.get(i).getName() + "\r\n";
+				hasErrors = true;
+			}
+		}
+		for (int i=0; i<records.size(); i++) {
+			if (records.get(i).getLocal() != null){
+				records.get(i).getLocal().flushBuffer(flush);
+			}
+		}
+		
+	}
+	
+	//Search table for record
 	public boolean search(Record record) {
 		
-		if(record.getStructure().equals("variable")) {
-			
-			if (record.getVarStructure().equals("array")) {
-				
-				for (int i=0; i<records.size(); i++) {
-					
-					if (record.getName().equals(records.get(i).getName()) && record.getDimension().size() == records.get(i).getDimension().size())
-						return true;
-					
-				}
-				
-				if (parentTable!=null)
-					return parentTable.search(record);
-				
-				System.err.print("Array " + record.getName());
-				
-				for (int i=0; i<record.getDimension().size(); i++) {
-					
-					System.err.print("[]");
-					
-				}
-				
-				System.err.println(" is undefined");
-				
-				//Parser.tableError = true;
-				
-				return false;
-				
-			}
-			
-			else {
-				
-				for (int i=0; i<records.size(); i++) {
-					
-					if (record.getName().equals(records.get(i).getName()))
-						return true;
-					
-				}
-				
-				if (parentTable!=null)
-					return parentTable.search(record);
-				
-				System.err.println("Error: Variable " + record.getName() + " is undefined");
-				
-				//Parser.tableError = true;
-				
-				return false;
-				
-			}
-			
-		}
-		
-		else if (record.getStructure().equals("function")) {
-			
+		//Handling Function
+		if (record.getStructure().equals("function")) {
 			for (int i=0; i<records.size(); i++) {
-				
-				if (record.getName().equals(records.get(i).getName()) && record.getParams().size() == records.get(i).getParams().size())
+				if (record.getName().equals(records.get(i).getName()) 
+						&& record.getParams().size() == records.get(i).getParams().size()){
 					return true;
-				
+				}
 			}
-			
-			if (parentTable!=null)
+			if (parentTable!=null){
 				return parentTable.search(record);
-			
+			}
+			errors += "Error: undefined function " + record.getName() + "(";
 			System.err.print("Error: Function " + record.getName() + "(");
 			
 			for (int i=0; i<record.getParams().size(); i++) {
-				
-				if (i == record.getParams().size() - 1)
-					System.err.print("parameter");
-				
-				else
-					System.err.print("parameter, ");
-				
+				if(i == record.getParams().size() - 1){
+					errors += record.getParams().get(i);
+				}
+				else{
+					errors += record.getParams().get(i) + ", ";
+				}
 			}
-			
-			System.err.println(") is undefined");
-			
-			//Parser.tableError = true;
-			
+			errors += "\r\n";
+			hasErrors = true;
 			return false;
 			
 		}
-		
-		return false;
-		
-	}
-	
-	public Record findScope(Record record) {
-		
-		if(record.getStructure().equals("variable")) {
-			
+		//Handling Variable
+		else if(record.getStructure().equals("variable")) {
+			//Array
 			if (record.getVarStructure().equals("array")) {
-				
 				for (int i=0; i<records.size(); i++) {
-					
-					if (record.getName().equals(records.get(i).getName()) && record.getDimension().size() == records.get(i).getDimension().size())
-						return getScope(records.get(i).getType());
-					
+					if (record.getName().equals(records.get(i).getName()) && 
+							record.getDimension().size() == records.get(i).getDimension().size()){
+						return true;
+					}
 				}
-				
-				return new Record();
-				
+				if (parentTable!=null){
+					return parentTable.search(record);
+				}
+				errors += "Error: undefined array " + record.getName();
+				for (int i=0; i<record.getDimension().size(); i++) {
+					errors += "[]";
+				}
+				errors += "\r\n";
+				hasErrors = true;
+				return false;
 			}
-			
+			//Simple
 			else {
-				
 				for (int i=0; i<records.size(); i++) {
-					
 					if (record.getName().equals(records.get(i).getName()))
-						return getScope(records.get(i).getType());
-					
+						return true;
 				}
-				
-				return new Record();
-				
+				if (parentTable!=null){
+					return parentTable.search(record);
+				}
+				errors += "Errors: undefined variable" + record.getName() + "\r\n";
+				hasErrors = true;
+				return false;
 			}
-			
 		}
-		
-		else if (record.getStructure().equals("function")) {
-			
-			for (int i=0; i<records.size(); i++) {
-				
-				if (record.getName().equals(records.get(i).getName()) && record.getParams().size() == records.get(i).getParams().size())
-					return getScope(records.get(i).getType());
-				
-			}
-			
-			return null;
-			
-		}
-		
-		return null;
-		
+		return false;
 	}
 	
-	public Record getScope(String type) {
-		
-		for (int i=0; i<records.size(); i++) {
-			
-			if (records.get(i).getStructure().equals("class") && records.get(i).getName().equals(type))
-				return records.get(i);
-			
-		}
-		
-		if (parentTable!=null)
-			return parentTable.getScope(type);
-		
-		return new Record();
-		
-	}
-	
-	public String getVariableType(Record record) {
-		
-		for (int i=0; i<records.size(); i++) {
-			
-			if (records.get(i).getStructure().equals("variable") && records.get(i).getName().equals(record.getName()))
-				return records.get(i).getType();
-			
-		}
-		
-		if (parentTable!=null)
-			return parentTable.getVariableType(record);
-		
-		return null;
-		
-	}
-	
+	//retrieve record
 	public Record find(Record record) {
 		
 		for (int i=0; i<records.size(); i++) {
-			
-			if (records.get(i).equalsR(record, true))
+			if (records.get(i).equalsRecord(record, true)){
 				return records.get(i);
-			
+			}
 		}
-		
-		if (parentTable!=null)
+		if (parentTable!=null){
 			return parentTable.find(record);
+		}
+		errors += "Error: element " + record.getName() + " is undefined in scope. " + "\r\n";
+		hasErrors = true;
+		return new Record();		
+	}
+	
+	//get scope of record
+	public Record getScope(String type) {
 		
-		System.err.println("Error: Element " + record.getName() + " is undefined in scope" );
-		//Parser.tableError = true;
+		for (int i=0; i<records.size(); i++) {
+			if (records.get(i).getStructure().equals("class") && records.get(i).getName().equals(type)){
+				return records.get(i);
+			}
+		}
+		if (parentTable!=null){
+			return parentTable.getScope(type);
+		}
 		return new Record();
-		
 	}
 	
-	public String toString() {
-		
-		String wholeTable = "";
+	//return Type of Variable
+	public String getVariableType(Record record) {
 		
 		for (int i=0; i<records.size(); i++) {
-			
-			wholeTable = wholeTable + records.get(i).toString() + "\n";
-			
+			if (records.get(i).getStructure().equals("variable") && 
+					records.get(i).getName().equals(record.getName())){
+				return records.get(i).getType();
+			}
 		}
-		
-		return wholeTable;
-		
-	}
-	
-	/* MOON CODE INCOMPLETE
-	
-	public void writeMOON(PrintWriter moonCode) {
-		
-		for (int i=0; i<records.size(); i++) {
-			
-			if(records.get(i).getStructure().equals("variable") && records.get(i).getVarKind().equals("normal")) {
-				
-				//records.get(i).giveAddress();
-				
-				moonCode.println(records.get(i).getAddress() + "\tdw 0");
-				
-				records.get(i).getClassLocal().writeMOON(moonCode);
-				
-			}
-			
-			else if (records.get(i).getName().equals("program")) {
-				
-				records.get(i).getLocal().writeMOON(moonCode);
-				
-			}
-			
-			else if (records.get(i).getStructure().equals("function")) {
-				
-				//records.get(i).giveAddress();
-				
-				moonCode.println(records.get(i).getAddress() + "\tdw 0");
-					
-				for (int k=0; k < records.get(i).getLocal().records.size(); k++) {
-						
-					if (records.get(i).getLocal().records.get(k).getVarKind().equals("parameter")) {
-						
-						//records.get(i).getLocal().records.get(k).giveAddress();
-						
-						moonCode.println(records.get(i).getLocal().records.get(k).getAddress() + "\tdw 0");
-						moonCode.println("\tsw " + records.get(i).getLocal().records.get(k).getAddress() + "(r0),r" + (++parameterNum));
-							
-					}
-					
-				}
-				
-				parameterNum = 1;
-				
-				records.get(i).getLocal().writeMOON(moonCode);
-				
-				records.get(i).getLocal().printMoonCalls(moonCode);
-				
-				for (int k=0; k < records.get(i).getLocal().records.size(); k++) {
-					
-					if (records.get(i).getLocal().records.get(k).getVarKind().equals("parameter")) {
-						
-						moonCode.println("\tlw r" + (++parameterNum) + "," + records.get(i).getLocal().records.get(k).getAddress() + "(r0)");
-							
-					}
-					
-				}
-				
-				moonCode.println("\tjr r15");
-				
-			}
-			
+		if (parentTable!=null){
+			return parentTable.getVariableType(record);
 		}
-		
+		return null;	
 	}
-
-	public ArrayList<String> getMoonCalls() {
-		return moonCalls;
-	}
-
-	public void setMoonCalls(ArrayList<String> moonCalls) {
-		this.moonCalls = moonCalls;
-	}
-	
-	public void printMoonCalls(PrintWriter moonCode) {
-		
-		for(int i=0; i<moonCalls.size(); i++) {
-			
-			moonCode.println(moonCalls.get(i));
-			
-		}
-		
-	}
-	
-	*/
-	
-	public void giveAddresses() {
-		
-		for(int i=0; i<records.size(); i++) {
-			
-			if(records.get(i).getStructure().equals("function")) {
-				
-				records.get(i).giveAddress();
-				
-				records.get(i).getLocal().giveAddresses();
-				
-			}
-			
-			else if(records.get(i).getStructure().equals("variable")) {
-				
-				records.get(i).giveAddress();
-				
-				records.get(i).getClassLocal().giveAddresses();
-				
-			}
-			
-		}
-		
-	}
-	
 }

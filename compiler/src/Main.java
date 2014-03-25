@@ -28,7 +28,8 @@ public class Main {
 		Parser par = new Parser(lex);
 		
 		//write to file
-		f.write(lex.getTokens(), lex.getErrorMessages(), par.getParsedContent());
+		f.write(lex.getTokens(), lex.getErrorMessages(), par.getParsedContent(),
+				par.getParserErrors(), par.getTableInfo(), par.getTableErrors());
 
 		
 			

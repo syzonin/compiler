@@ -18,7 +18,7 @@ public class Lexer {
 		this.fileContent = fileContent;
 		
 		//printFileContent();
-		System.out.println("number of characters: " + fileContent.length);
+
 		// create lookup table
 		createLookupTable();
 	}
@@ -36,12 +36,12 @@ public class Lexer {
 			t = nextToken();
 			if (t != null){
 				if (!t.getType().equals("error")){
-					System.out.println(t.toString());
+					//System.out.println(t.toString());
 					setTokens(getTokens() + t.toString());
 				}
 			}
 			else{
-				System.out.println("Reached end of file.");
+				//System.out.println("Reached end of file.");
 			}
 			//if token type is an error, do not write to file
 		}
@@ -73,8 +73,8 @@ public class Lexer {
 					String error = "Error occurred with the following set of characters: " + lexeme 
 							+ " at location " + (currentLocation-lexeme.length()) + "\r\n";
 					setErrorMessages(getErrorMessages() + error);
-					System.out.println(error);
-					System.out.println("Commencing panic mode token recovery...");
+					//System.out.println(error);
+					//System.out.println("Commencing panic mode token recovery...");
 					state = "1";
 					errorFound = true;
 					newToken = new Token("error", lexeme, currentLocation-lexeme.length(), lexeme.length());

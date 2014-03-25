@@ -9,8 +9,11 @@ import java.io.IOException;
 public class FileIO {
 	
 	String tokenFilePath = "tokens.txt";
-	String errorFilePath = "errorMessages.txt";
+	String lexErrorFilePath = "lexErrors.txt";
 	String parserFilePath = "parseInfo.txt";
+	String parseErrorFilePath = "parseErrors.txt";
+	String tableFilePath = "tableInfo.txt";
+	String tableErrorFilePath = "tableErrors.txt";
 	String filePath = "profprovided.txt";;
 	
 	//returns char array of file read
@@ -31,10 +34,14 @@ public class FileIO {
 	}
 	
 	//writes strings to specified file paths
-	public void write(String tokens, String error, String parse){
+	public void write(String tokens, String lexError, String parse, 
+			String parseError, String table, String tableError){
 		writeToFile(tokenFilePath, tokens);
-		writeToFile(errorFilePath, error);
+		writeToFile(lexErrorFilePath, lexError);
 		writeToFile(parserFilePath, parse);
+		writeToFile(parseErrorFilePath, parseError);
+		writeToFile(tableFilePath, table);
+		writeToFile(tableErrorFilePath, tableError);
 	}
 	
 	//writes string to file
