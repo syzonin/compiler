@@ -21,7 +21,7 @@ public class Parser {
 		while (!l.fileComplete()){
 			Token t = l.getNextToken();
 			
-			if(t != null && !t.getType().equals("error")){
+			if(t != null && !t.getType().equals("error") && !t.getType().equals("comment")){
 				tokenArray.add(t);
 			}
 		}
@@ -86,15 +86,21 @@ public class Parser {
 		lookAhead = nextTokenParser();
 		lookBehind = lookAhead;
 		
-		boolean success;
-		if (Prog(table) && match("eof"))
-			success = true;
-		else
-			success = false;
+		//boolean success;
+		
+		boolean b1 = Prog(table);
+		boolean b2 = match("eof");
+		
 		flush = true;
 		tableInfo = table.getSymbolTable();
 		table.flushBuffer(flush);
-		return success;
+		
+		Parser2 parser2 = new Parser2(table, tokenArray);
+		errorMessages += parser2.getParserErrors();
+		
+		boolean b3 = parser2.parsed;
+		
+		return (b1 && b2 && b3);
 	}
 	
 	//Returns next parser token
@@ -557,7 +563,7 @@ public class Parser {
 			boolean b2 = FuncBodyMember3(call, table);
 			
 			if (b1 && b2){
-				parseInfo += "IndiceList FuncBodyMember3" + "\r\n";
+				parseInfo += "FuncBodyMember2 -> IndiceList FuncBodyMember3" + "\r\n";
 			}
 			else {
 				success = false;
@@ -606,7 +612,7 @@ public class Parser {
 			boolean b1 = match("dot");
 			
 			if (parsedComplete && table.search(call)){
-				newScope = table.find(call).getLocal();
+				newScope = table.find(call, true).getLocal();
 			}
 			
 			boolean b2 = Variable(newScope);
@@ -977,7 +983,7 @@ public class Parser {
 
 	//26. Sign -> + | -
 	private boolean Sign(){
-		//System.out.println("Calling: Sign -> + | -");
+
 		boolean success = skipErrors(nt.Sign);
 		if (lookAhead.inRHS1(nt.Sign)){
 			if (match("add"))
@@ -1163,14 +1169,14 @@ public class Parser {
 	//31. IdnestList -> . id IndiceList IdnestList | epsilon
 	private boolean IdnestList(Record call, Table table){
 		Table newScope = new Table();
-		//System.out.println("Calling: IdnestList -> . id IndiceList IdnestList | epsilon");
+
 		boolean success = skipErrors(nt.IdnestList);
 		if (lookAhead.inRHS1(nt.IdnestList)){
 			
 			boolean b1 = match("dot");
 			
 			if (parsedComplete && table.search(call)){
-				newScope = table.find(call).getLocal();
+				newScope = table.find(call, true).getLocal();
 			}
 			
 			Record newCall = new Record();
@@ -1180,6 +1186,7 @@ public class Parser {
 			
 			boolean b3 = IndiceList(newCall, newScope);
 			lastIdnest = newCall;
+
 			
 			boolean b4 = IdnestList(newCall, newScope);
 			
@@ -1199,6 +1206,7 @@ public class Parser {
 		return success;
 	}
 	
+	//IdnestList2 -> . id IndiceList IdnestList2 | epsilon
 	private boolean IdnestList2(Record call, Table table){
 		
 		Table newScope = new Table();
@@ -1208,9 +1216,9 @@ public class Parser {
 			
 			boolean b1 = match("dot");
 			
-			if (parsedComplete && table.search(call)){
-				newScope = table.find(call).getLocal();
-			}
+			
+			//newScope = table.find(call, true).getClassLocal();
+			newScope.printTable();
 			
 			Record newCall = new Record();
 			
@@ -1287,6 +1295,9 @@ public class Parser {
 			}
 		}
 		else if (lookAhead.inFollow(nt.IndiceList)){
+			
+			//TOOK OUT TEST CODE
+			
 			parseInfo += "Indice -> epsilon" + "\r\n";
 		}
 		else {
@@ -1652,7 +1663,6 @@ public class Parser {
 		}
 		else {
 			success = false;
-			System.out.println("In MultOp(), did not pass: lookAhead.getType().equals(...)");
 		}
 		return success;
 	}

@@ -11,6 +11,7 @@ public class Table {
 	public static boolean hasErrors = false;
 	private String tableInfo = "";
 	
+	
 	//Empty Constructor
 	public Table() {
 		records = new ArrayList<Record>();
@@ -27,7 +28,7 @@ public class Table {
 		validTypes = parent.validTypes;
 		parentTable = parent;
 	}
-
+	
 	public String getSymbolTable(){
 		ArrayList<Record> classArray = new ArrayList<Record>();
 		ArrayList<Record> functionArray = new ArrayList<Record>();
@@ -74,6 +75,52 @@ public class Table {
 		return tableInfo;
 		
 	}
+	
+	public void printTable(){
+		ArrayList<Record> classArray = new ArrayList<Record>();
+		ArrayList<Record> functionArray = new ArrayList<Record>();
+		
+		tableInfo += "Table: Global Scope" + "\r\n";
+		for (int i = 0; i < records.size(); i++){
+			tableInfo += records.get(i) + "\r\n";
+		}
+		tableInfo += "\r\n";
+		
+		for (int i = 0; i < records.size(); i++){
+			if (records.get(i).getStructure().equals("function")){
+				functionArray.add(records.get(i));
+			}
+			else if (records.get(i).getStructure().equals("class")){
+				classArray.add(records.get(i));
+				ArrayList<Record> temp = records.get(i).getLocal().getRecords();
+				for(int j = 0; j < temp.size(); j++){
+					if (temp.get(j).getStructure().equals("function")){
+						functionArray.add(temp.get(j));
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < classArray.size(); i++){
+			tableInfo +="Table: Class "+ classArray.get(i).getName() + "\r\n";
+			ArrayList<Record> temp = classArray.get(i).getLocal().getRecords();
+			for(int j = 0; j < temp.size(); j++){
+				tableInfo += temp.get(j) + "\r\n";
+			}
+			tableInfo += "\r\n";
+		}
+		
+		for (int i = 0; i < functionArray.size(); i++){
+			tableInfo += "Table: Function "+ functionArray.get(i).getName() + "\r\n";
+			ArrayList<Record> temp = functionArray.get(i).getLocal().getRecords();
+			for(int j = 0; j < temp.size(); j++){
+					tableInfo += temp.get(j) + "\r\n";
+			}
+			tableInfo += "\r\n";
+		}
+		System.out.println(tableInfo);
+	}
+	
 	public static String getTableErrors(){
 		return errors;
 	}
@@ -174,7 +221,7 @@ public class Table {
 		
 		boolean declared = false;
 		for (int i=0; i<records.size(); i++) {
-			if(record.equalsRecord(records.get(i), false)){
+			if(record.equalsRecord(records.get(i), false, true)){
 				declared = true;
 			}
 		}
@@ -205,7 +252,7 @@ public class Table {
 		
 	}
 	
-	//Search table for record
+	//Search tables for record
 	public boolean search(Record record) {
 		
 		//Handling Function
@@ -240,7 +287,7 @@ public class Table {
 			if (record.getVarStructure().equals("array")) {
 				for (int i=0; i<records.size(); i++) {
 					if (record.getName().equals(records.get(i).getName()) && 
-							record.getDimension().size() == records.get(i).getDimension().size()){
+							record.getDimension().size() <= records.get(i).getDimension().size()){
 						return true;
 					}
 				}
@@ -264,7 +311,7 @@ public class Table {
 				if (parentTable!=null){
 					return parentTable.search(record);
 				}
-				errors += "Errors: undefined variable" + record.getName() + "\r\n";
+				errors += "Error: undefined variable " + record.getName() + "\r\n";
 				hasErrors = true;
 				return false;
 			}
@@ -272,20 +319,125 @@ public class Table {
 		return false;
 	}
 	
-	//Checks if record is defined in scope
-	public Record find(Record record) {
+	//Checks if record is defined in scope and returns record
+	public Record find(Record record, boolean complete) {
 		
 		for (int i=0; i<records.size(); i++) {
-			if (records.get(i).equalsRecord(record, true)){
+			if (records.get(i).equalsRecord(record, true, complete)){
+				
+				//checking number of params into function
+				if(record.getStructure().equals("function") && complete){
+					checkNumParams(record, records.get(i));
+				}
+				
 				return records.get(i);
 			}
 		}
 		if (parentTable!=null){
-			return parentTable.find(record);
+			return parentTable.find(record, complete);
 		}
-		errors += "Error: element " + record.getName() + " is undefined in scope. " + "\r\n";
+		errors += "Error: Element " + record.getName() + " is undefined in scope" + ".\r\n";
+
 		hasErrors = true;
-		return new Record();		
+		return null;		
+	}
+	
+	//checks number of parameters of function call 
+	private void checkNumParams(Record r1, Record r2){
+		if (r1.getParams().size() != r2.getParams().size()){
+			errors += "Error: Function call " + r1.getName() + " has an incorrect number of parameters ";
+			errors += "(Expected: " + r2.getParams().size() +
+					", Got: " + r1.getParams().size() + ").\r\n";
+			hasErrors = true;
+		}
+	}
+	
+	//checks dimensions of array... i think the value got equalized
+	public void checkArrayDim(Record r){
+		boolean b = false;
+		boolean c = false;
+		Record temp = new Record();
+		for (int i=0; i<records.size(); i++) {
+			if (r.getName().equals(records.get(i).getName()) && 
+					r.getDimension().size() == records.get(i).getDimension().size()){
+				b = true;
+				c = true;
+				temp = records.get(i);
+			}
+			else if (r.getName().equals(records.get(i).getName()) ){
+				c = true;
+				temp = records.get(i);
+			}
+		}
+		if (b && c){/*
+			boolean d = true;
+			for(int i = 0; i<temp.getDimension().size(); i++){
+				if(r.getDimension().get(i) >= temp.getDimension().get(i)){
+					d = false;
+				}
+			}
+			if (!d){
+				errors += "Error: Array " + r.getName() +" dimensions exceeded ";
+				errors += "(Expected: " + temp.printDimension() +
+						", Got: " + r.printDimension() + ").\r\n";
+				hasErrors = true;
+			}*/
+		}
+		else if (c){
+			errors += "Error: Array " + r.getName() +" dimensions not met ";
+			errors += "(Expected: " + temp.getDimension().size() +
+					", Got: " + r.getDimension().size() + ").\r\n";
+			hasErrors = true;
+
+		}
+
+	}
+	//Find the record's scope
+	public Record findScope(Record record) {
+		
+		if(record.getStructure().equals("variable")) {
+			
+			if (record.getVarStructure().equals("array")) {
+				
+				for (int i=0; i<records.size(); i++) {
+					
+					if (record.getName().equals(records.get(i).getName()) && record.getDimension().size() == records.get(i).getDimension().size())
+						return getScope(records.get(i).getType());		
+				}
+				return new Record();
+				
+			}
+			
+			else {
+				
+				for (int i=0; i<records.size(); i++) {
+					
+					if (record.getName().equals(records.get(i).getName()))
+						return getScope(records.get(i).getType());
+					
+				}
+				
+				return new Record();
+				
+			}
+			
+		}
+		
+		else if (record.getStructure().equals("function")) {
+			
+			for (int i=0; i<records.size(); i++) {
+				
+				if (record.getName().equals(records.get(i).getName()) && record.getParams().size() == records.get(i).getParams().size())
+					return getScope(records.get(i).getType());
+				
+			}
+			
+			return null;
+			
+		}
+		
+		return null;
+		
 	}
 	
 	//get scope of record

@@ -125,14 +125,18 @@ public class Record {
 	}
 
 	//checks if parameter equals current record
-	public boolean equalsRecord(Record r, boolean call) {
+	public boolean equalsRecord(Record r, boolean call, boolean complete) {
 		
 		boolean equals = false;
 		if (name.equals(r.name) && structure.equals(r.structure)) {
 			if (structure.equals("class")){
 				equals = true;
 			}
-			else if(call && structure.equals("function") && params.size() == r.params.size()){
+			//else if(call && structure.equals("function")){
+			else if(call && structure.equals("function") && complete){
+				equals = true;
+			}
+			else if(call && structure.equals("function") && !complete){
 				equals = true;
 			}
 			else if (!call && structure.equals("function") && this.paramIsRepeated(r)){
@@ -169,7 +173,7 @@ public class Record {
 	}
 	
 	//Helper method for toString()
-	private ArrayList<Integer> printDimension(){
+	public ArrayList<Integer> printDimension(){
 		if (dimension.isEmpty()){
 			return null;
 		}

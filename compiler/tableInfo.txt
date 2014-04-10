@@ -1,7 +1,7 @@
 Table: Global Scope
 {Record name: Utility, structure: class, type: class, number of parameters: 0, parameters: false, local table: true, address: 0}
-{Record name: randomize, structure: function, type: float, number of parameters: 0, parameters: false, local table: true, address: 99}
-{Record name: program, structure: function, type: function, number of parameters: 0, parameters: false, local table: true, address: 53}
+{Record name: randomize, structure: function, type: float, number of parameters: 0, parameters: false, local table: true, address: 110}
+{Record name: program, structure: function, type: function, number of parameters: 0, parameters: false, local table: true, address: 63}
 
 Table: Class Utility
 {Record name: var1, structure: variable, type: int, variable kind: normal, variable structure: array, dimension: [4, 5, 7, 8, 9, 1, 0], address: 1}
@@ -16,18 +16,18 @@ Table: Function findMax
 
 Table: Function findMin
 {Record name: array, structure: variable, type: int, variable kind: parameter, variable structure: array, dimension: [100], address: 30}
-{Record name: minValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 32}
+{Record name: minValue, structure: variable, type: float, variable kind: normal, variable structure: simple, dimension: null, address: 32}
 {Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 39}
 
 Table: Function randomize
-{Record name: value, structure: variable, type: float, variable kind: normal, variable structure: simple, dimension: null, address: 101}
+{Record name: value, structure: variable, type: float, variable kind: normal, variable structure: simple, dimension: null, address: 112}
 
 Table: Function program
-{Record name: sample, structure: variable, type: int, variable kind: normal, variable structure: array, dimension: [100], address: 54}
-{Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 56}
-{Record name: maxValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 58}
-{Record name: minValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 60}
-{Record name: utility, structure: variable, type: Utility, variable kind: normal, variable structure: simple, dimension: null, address: 62}
-{Record name: arrayUtility, structure: variable, type: Utility, variable kind: normal, variable structure: array, dimension: [2, 3, 6, 7], address: 63}
-{Record name: t, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 65}
+{Record name: sample, structure: variable, type: int, variable kind: normal, variable structure: array, dimension: [100], address: 64}
+{Record name: idx, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 66}
+{Record name: maxValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 68}
+{Record name: minValue, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 70}
+{Record name: utility, structure: variable, type: Utility, variable kind: normal, variable structure: simple, dimension: null, address: 72}
+{Record name: arrayUtility, structure: variable, type: Utility, variable kind: normal, variable structure: array, dimension: [2, 3, 6, 7], address: 73}
+{Record name: t, structure: variable, type: int, variable kind: normal, variable structure: simple, dimension: null, address: 75}
 

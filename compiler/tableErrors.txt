@@ -1,0 +1,6 @@
+Error: Variable idx already declared.
+Error: Element maxValue is undefined in scope.
+Error: Element maxValue is undefined in scope.
+Error: Function call findMax has an incorrect number of parameters (Expected: 1, Got: 2).
+Error: Array arrayUtility dimensions not met (Expected: 4, Got: 5).
+Error: Element var1 is undefined in scope.
