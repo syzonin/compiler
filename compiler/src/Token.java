@@ -4,7 +4,7 @@ public class Token {
 	private String lexeme;
 	private int count;
 	private int length;
-	
+	private int line;
 	
 	public Token(String type, String lexeme, int count, int length){
 		this.type = type;
@@ -102,5 +102,13 @@ public class Token {
 	public String toString(){
 		String ret = "Token type: " + type + ", lexeme: " + lexeme + ", count: " + count +", length: " + length + "\r\n";
 		return ret;
+	}
+
+	public int getLine() {
+		return line;
+	}
+
+	public void setLine(int line) {
+		this.line = line;
 	}
 }

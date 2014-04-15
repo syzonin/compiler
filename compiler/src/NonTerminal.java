@@ -8,6 +8,7 @@ public class NonTerminal {
 	private String[] RHS4;
 	private String[] RHS5;
 	private String[] RHS6;
+	private String type;
 	
 	public NonTerminal(String s, String[] first, String[] follow, 
 			String[] r1, String[] r2, String[] r3, String[] r4, String[] r5, String[] r6){
@@ -118,5 +119,13 @@ public class NonTerminal {
 		} 
 		String s = "Symbol: " + symbol + " , first set: " + first + " , follow set: " + follow; 
 		return s;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

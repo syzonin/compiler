@@ -121,6 +121,10 @@ public class Table {
 		System.out.println(tableInfo);
 	}
 	
+	public static void addError(String e){
+		errors += e;
+		hasErrors = true;
+	}
 	public static String getTableErrors(){
 		return errors;
 	}
@@ -249,11 +253,11 @@ public class Table {
 				records.get(i).getLocal().flushBuffer(flush);
 			}
 		}
-		
+	
 	}
 	
 	//Search tables for record
-	public boolean search(Record record) {
+	public boolean search(Record record, int line) {
 		
 		//Handling Function
 		if (record.getStructure().equals("function")) {
@@ -264,9 +268,9 @@ public class Table {
 				}
 			}
 			if (parentTable!=null){
-				return parentTable.search(record);
+				return parentTable.search(record, line);
 			}
-			errors += "Error: undefined function " + record.getName() + "(";
+			errors += "Error on line " + line +": undefined function " + record.getName() + "(";
 			
 			for (int i=0; i<record.getParams().size(); i++) {
 				if(i == record.getParams().size() - 1){
@@ -276,7 +280,7 @@ public class Table {
 					errors += record.getParams().get(i) + ", ";
 				}
 			}
-			errors += "\r\n";
+			errors += ")\r\n";
 			hasErrors = true;
 			return false;
 			
@@ -292,9 +296,9 @@ public class Table {
 					}
 				}
 				if (parentTable!=null){
-					return parentTable.search(record);
+					return parentTable.search(record, line);
 				}
-				errors += "Error: undefined array " + record.getName();
+				errors += "Error on line " + line +": undefined array " + record.getName();
 				for (int i=0; i<record.getDimension().size(); i++) {
 					errors += "[]";
 				}
@@ -309,9 +313,9 @@ public class Table {
 						return true;
 				}
 				if (parentTable!=null){
-					return parentTable.search(record);
+					return parentTable.search(record, line);
 				}
-				errors += "Error: undefined variable " + record.getName() + "\r\n";
+				errors += "Error on line " + line +": undefined variable " + record.getName() + "\r\n";
 				hasErrors = true;
 				return false;
 			}
@@ -319,41 +323,126 @@ public class Table {
 		return false;
 	}
 	
+	//Search tables for record
+		public Record searchRecord(Record record, int line) {
+			if (record != null){
+				//Handling Function
+				if (record.getStructure().equals("function")) {
+					for (int i=0; i<records.size(); i++) {
+						if (record.getName().equals(records.get(i).getName()) 
+								&& record.getParams().size() == records.get(i).getParams().size()){
+							return records.get(i);
+						}
+					}
+					if (parentTable!=null){
+						return parentTable.searchRecord(record, line);
+					}
+					errors += "Error on line " + line +": undefined function " + record.getName() + "(";
+					
+					for (int i=0; i<record.getParams().size(); i++) {
+						if(i == record.getParams().size() - 1){
+							errors += record.getParams().get(i);
+						}
+						else{
+							errors += record.getParams().get(i) + ", ";
+						}
+					}
+					errors += ")\r\n";
+					hasErrors = true;
+					return null;
+					
+				}
+				//Handling Variable
+				else if(record.getStructure().equals("variable")) {
+					//Array
+					if (record.getVarStructure().equals("array")) {
+						for (int i=0; i<records.size(); i++) {
+							if (record.getName().equals(records.get(i).getName()) && 
+									record.getDimension().size() <= records.get(i).getDimension().size()){
+								return records.get(i);
+							}
+						}
+						if (parentTable!=null){
+							return parentTable.searchRecord(record, line);
+						}
+						errors += "Error on line " + line +": undefined array " + record.getName();
+						for (int i=0; i<record.getDimension().size(); i++) {
+							errors += "[]";
+						}
+						errors += "\r\n";
+						hasErrors = true;
+						return null;
+					}
+					//Simple
+					else {
+						for (int i=0; i<records.size(); i++) {
+							if (record.getName().equals(records.get(i).getName()))
+								return records.get(i);
+						}
+						if (parentTable!=null){
+							return parentTable.searchRecord(record, line);
+						}
+						errors += "Error on line " + line +": undefined variable " + record.getName() + "\r\n";
+						hasErrors = true;
+						return null;
+					}
+				}
+			}
+			return null;
+		}
+	
 	//Checks if record is defined in scope and returns record
-	public Record find(Record record, boolean complete) {
-		
+	public Record find(Record record, boolean complete, int line) {
+
 		for (int i=0; i<records.size(); i++) {
 			if (records.get(i).equalsRecord(record, true, complete)){
 				
 				//checking number of params into function
 				if(record.getStructure().equals("function") && complete){
-					checkNumParams(record, records.get(i));
+					//checkNumParams(record, records.get(i));
 				}
 				
 				return records.get(i);
 			}
 		}
 		if (parentTable!=null){
-			return parentTable.find(record, complete);
+			return parentTable.find(record, complete,line);
+			
 		}
-		errors += "Error: Element " + record.getName() + " is undefined in scope" + ".\r\n";
-
+		
+		errors += "Error on line " + line +": Element " + record.getName() + " is undefined in scope" + ".\r\n";
 		hasErrors = true;
 		return null;		
 	}
 	
+	public Record findById(Record record) {
+		
+		for (int i=0; i<records.size(); i++) {
+			if (records.get(i).getName().equals(record.getName())){
+				return records.get(i);
+			}
+		}
+		if (parentTable!=null){
+			return parentTable.findById(record);
+		}
+		//errors += "Error: Element " + record.getName() + " is undefined in scope" + ".\r\n";
+		System.out.println("Error: Element "+ record.getName() + " not found by ID." );
+		//hasErrors = true;
+		return null;		
+	}
+	
 	//checks number of parameters of function call 
-	private void checkNumParams(Record r1, Record r2){
+	/*private void checkNumParams(Record r1, Record r2){
 		if (r1.getParams().size() != r2.getParams().size()){
 			errors += "Error: Function call " + r1.getName() + " has an incorrect number of parameters ";
 			errors += "(Expected: " + r2.getParams().size() +
 					", Got: " + r1.getParams().size() + ").\r\n";
 			hasErrors = true;
 		}
-	}
+	}*/
 	
 	//checks dimensions of array... i think the value got equalized
-	public void checkArrayDim(Record r){
+	public void checkArrayDim(Record r, int line){
 		boolean b = false;
 		boolean c = false;
 		Record temp = new Record();
@@ -384,7 +473,7 @@ public class Table {
 			}*/
 		}
 		else if (c){
-			errors += "Error: Array " + r.getName() +" dimensions not met ";
+			errors += "Error on line " + line + ": Array " + r.getName() +" dimensions not met ";
 			errors += "(Expected: " + temp.getDimension().size() +
 					", Got: " + r.getDimension().size() + ").\r\n";
 			hasErrors = true;

@@ -14,7 +14,7 @@ public class FileIO {
 	String parseErrorFilePath = "parseErrors.txt";
 	String tableFilePath = "tableInfo.txt";
 	String tableErrorFilePath = "tableErrors.txt";
-	String filePath = "profprovided.txt";;
+	String filePath = "profprovided.txt";
 	
 	//returns char array of file read
 	public char[] readFileToCharArray() throws IOException {
@@ -32,6 +32,7 @@ public class FileIO {
 		reader.close();
 		return  fileData.toString().toCharArray();	
 	}
+	
 	
 	//writes strings to specified file paths
 	public void write(String tokens, String lexError, String parse, 

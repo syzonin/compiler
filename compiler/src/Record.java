@@ -10,10 +10,9 @@ public class Record {
 	private Table local;
 	private Table classLocal;
 	private ArrayList<Integer> dimension = new ArrayList<Integer>();
-	private ArrayList<String> params = new ArrayList<String>();
+	private ArrayList<Type> params = new ArrayList<Type>();
 	private int address;
 	private static int increment = 0;
-	
 	
 	public Record() {
 		address = increment++;
@@ -100,11 +99,11 @@ public class Record {
 		this.dimension = dimension;
 	}
 
-	public ArrayList<String> getParams() {
+	public ArrayList<Type> getParams() {
 		return params;
 	}
 
-	public void setParams(ArrayList<String> params) {
+	public void setParams(ArrayList<Type> params) {
 		this.params = params;
 	}
 	
@@ -132,7 +131,6 @@ public class Record {
 			if (structure.equals("class")){
 				equals = true;
 			}
-			//else if(call && structure.equals("function")){
 			else if(call && structure.equals("function") && complete){
 				equals = true;
 			}
@@ -199,5 +197,6 @@ public class Record {
 		}
 		return s;
 	}
-	
+
+
 }

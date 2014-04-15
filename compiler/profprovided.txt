@@ -7,10 +7,11 @@ class Utility
  int findMax(int array[100]) 
  { 
  	int maxValue; 
+ 	int maxValue;
  	maxValue = array[100]; 
  	for(int idx = 99; idx > 0; idx = idx - 1 ) 
  	{ 
- 		if(array[idx] > maxValue) then { 
+ 		if(array[idx][100] > maxValue) then { 
  			maxValue = array[idx]; 
  		}else{}; 
  	}; 
@@ -19,22 +20,23 @@ class Utility
  
  int findMin(int array[100]) 
  { 
- 	float minValue; 
+ 	float minValue; //type error
  	minValue = array[100]; 
  	for(int idx = 1; idx <= 99; idx = ( idx ) + 1) 
  	{ 
- 		if(array[idx] < maxValue) then { 
+ 		if(array[idx] < minValue) then { 
  			maxValue = array[idx]; 
  			if(1 < 2) then {
- 				minValue = array[idx];
+ 				maxValue = array[idx];
  		    }else{
  		    	minValue = 0;
  		    	};
  		}else{}; 
- 		for(int idx = 1; idx <= 99; idx = ( idx ) + 1) {
+ 		for(int id = 1; id <= 99; id = ( id ) + 1) {
  			minValue = minValue + 1;
  		};
- 	}; 
+ 	};  
+ 	
  	return (minValue); 
  }; 
 }; 
@@ -42,10 +44,14 @@ class Utility
 
 program { 
  int sample[100]; 
+
  int idx; 
  int maxValue; 
  int minValue; 
  Utility utility; 
+ 
+ //undefined class
+ Maximize m; 
  Utility arrayUtility[2][3][6][7]; 
  for(int t = 0; t<=100 ; t = t + 1) 
  { 
@@ -53,17 +59,30 @@ program {
  	sample[t] = (sample[t] * randomize()); 
  }; 
 
- maxValue = utility.findMax(sample,sample); 
+ //wrong number of parameters
+ maxValue = utility.findMax(sample, sample); 
  minValue = utility.findMin(sample); 
+ 
+ //wrong parameter types
+ minValue = utility.findMin(1.2);
+ 
+ //undefined method
+ minValue = utility.findMid(sample); 
+  
  
  utility. var1[4][1][0][0][0][0][0] = 10; 
  arrayUtility[1][1][1][1][1].var1[4][1][0][0][0][0][0][1] = 2; 
  put(maxValue); 
- put(minValue); 
+ put(minValue);
 }; 
+
 float randomize() 
 { 
- float value; 
+ int value; 
+ 
+ //complex expression, assignment type checking
  value = 100 * (2 + 3.0 / 7.0006); 
+ 
+ //wrong return value type
  return (value); 
 }; 

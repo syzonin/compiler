@@ -1,6 +1,29 @@
-Error: Variable idx already declared.
-Error: Element maxValue is undefined in scope.
-Error: Element maxValue is undefined in scope.
-Error: Function call findMax has an incorrect number of parameters (Expected: 1, Got: 2).
-Error: Array arrayUtility dimensions not met (Expected: 4, Got: 5).
-Error: Element var1 is undefined in scope.
+Error: Variable maxValue already declared.
+Error: Invalid type Maximize for variable m
+Error on line 14: Array array dimensions not met (Expected: 1, Got: 2).
+Error on line 24: types float and int do not match.
+Error on line 27: types int and float do not match.
+Error on line 28: undefined variable maxValue
+Error on line 28: Element maxValue is undefined in scope.
+Error on line 30: undefined variable maxValue
+Error on line 30: Element maxValue is undefined in scope.
+Error on line 32: types float and int do not match.
+Error on line 36: types float and int do not match.
+Error on line 36: types float and int do not match.
+Error on line 40: return type float does not match function findMin's return type, int.
+Error on line 54: undefined variable Maximize
+Error on line 59: types int and float do not match.
+Error on line 59: types int and float do not match.
+Error on line 63: undefined function findMax(, )
+Error on line 63: Function call findMax has an incorrect number of parameters (Expected: 1, Got: 2).
+Error on line 67: Function call findMin has the wrong parameter types (Expected: int, Got: float).
+Error on line 70: Element findMid is undefined in scope.
+Error on line 70: Element findMid is undefined in scope.
+Error on line 70: undefined function findMid()
+Error on line 74: Array arrayUtility dimensions not met (Expected: 4, Got: 5).
+Error on line 74: undefined variable var1
+Error on line 74: Element var1 is undefined in scope.
+Error on line 84: types int and float do not match.
+Error on line 84: types int and float do not match.
+Error on line 84: types int and float do not match.
+Error on line 87: return type int does not match function randomize's return type, float.

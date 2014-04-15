@@ -1,4 +1,0 @@
-Error: Variable idx already declared.
-Error: Variable idx already declared.
-Error: Invalid type real for variable value
-Error: Invalid type real for function randomize

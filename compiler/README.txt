@@ -1,0 +1,1 @@
+Please open project in Eclipse and run Main.java in src folder. Documentation and test cases (small variations of professor's provided code) in syntax table docs folder. The .txt files in compiler folder represent an error-free parse/symbol table creation.

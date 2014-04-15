@@ -17,12 +17,6 @@ public class Main {
 			
 		//call lexical analyzer
 		Lexer lex = new Lexer(fileContent);
-
-		
-		//INSERT PARSER CODE HERE 
-		/*while (!lex.fileComplete()){
-			lex.getNextToken();
-		}*/
 		
 		//call parser
 		Parser par = new Parser(lex);
@@ -31,7 +25,6 @@ public class Main {
 		f.write(lex.getTokens(), lex.getErrorMessages(), par.getParsedContent(),
 				par.getParserErrors(), par.getTableInfo(), par.getTableErrors());
 
-		
 			
 	}
 }
